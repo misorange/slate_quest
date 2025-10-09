@@ -1,0 +1,150 @@
+/* =================================
+   コードと回答欄がある画面用のスタイル
+   ================================= */
+
+/* 全体を囲むコンテナ */
+.container {
+    display: flex;
+    gap: 20px; /* パネル間の隙間 */
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box; /* paddingを含めて高さを100vhにする */
+}
+
+/* 左右のパネル共通スタイル */
+.code-panel,
+.answer-panel {
+    flex: 1; /* 幅を均等に分ける */
+    background-color: #ffffff;
+    border: 1px solid #d1d1d1;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column; /* ヘッダーとボディを縦に並べる */
+    overflow: hidden; /* 角丸を維持するため */
+}
+
+/* パネルのヘッダー */
+.panel-header {
+    background-color: #f7f7f7;
+    padding: 12px 20px;
+    border-bottom: 1px solid #d1d1d1;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* パネルのボディ */
+.panel-body {
+    padding: 20px;
+    flex-grow: 1; /* 残りの高さをすべて使う */
+    overflow-y: auto; /* 内容が多ければスクロール */
+}
+
+/* コード表示ブロック */
+.code-block {
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 1em;
+    font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
+    font-size: 0.95em;
+    line-height: 1.6;
+    white-space: pre-wrap; /* 横に長くなりすぎたら折り返す */
+}
+
+/* シンタックスハイライト（色分け）のサンプル */
+.code-block .keyword {
+    color: #0077ff; /* 青色 */
+    font-weight: bold;
+}
+.code-block .number {
+    color: #d9480f; /* オレンジ色 */
+}
+.code-block .string {
+    color: #2b9a2b; /* 緑色 */
+}
+.code-block .function {
+    color: #8f00a3; /* 紫色 */
+}
+.code-block .comment {
+    color: #999999; /*灰色 */
+    font-style: italic;
+}
+
+
+/* --- 回答パネル側のスタイル --- */
+.answer-panel p {
+    margin-top: 0;
+    line-height: 1.7;
+}
+
+#password-form {
+    margin-top: 24px;
+}
+
+.password-inputs {
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* 入力欄を中央に配置 */
+    margin-bottom: 30px;
+}
+
+.password-inputs input {
+    width: 50px;
+    height: 60px;
+    text-align: center;
+    font-size: 2em;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* 入力欄にフォーカスが当たった時のスタイル */
+.password-inputs input:focus {
+    outline: none;
+    border-color: #0077ff;
+    box-shadow: 0 0 5px rgba(0, 119, 255, 0.5);
+}
+
+.submit-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #28a745; /* 緑色 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #218838; /* 少し濃い緑色 */
+}
+
+.change-button {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff; /* 青色 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.change-button:hover {
+    background-color: #0056b3; /* 少し濃い青色 */
+}
