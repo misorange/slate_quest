@@ -42,3 +42,74 @@ body{
     font-size:20px;
     
 }
+/* body {
+    margin: 0;
+    background-color: #1a1a1a; /* ゲームらしい暗めの背景色 */
+    /* color: #f0f0f0; */
+    /* font-family: sans-serif; */
+/* } */ 
+
+#start-screen {
+    /* 画面全体に広げ、Flexboxで中央揃えを実現 */
+    display: flex;
+    flex-direction: column; /* 要素を縦に並べる */
+    justify-content: center; /* 垂直方向の中央揃え */
+    align-items: center;     /* 水平方向の中央揃え */
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ゲームタイトル */
+#start-screen .game-title {
+    font-family: 'DotGothic16', sans-serif;
+    font-size: 6rem; /* インパクトのある文字サイズ */
+    color: #ffffff;
+    text-shadow: 4px 4px 0px rgba(100, 100, 100, 0.7); /* 文字に影をつけて立体感を出す */
+    letter-spacing: 4px;
+    margin: 0;
+    margin-bottom: 60px; /* タイトルとボタンの間隔 */
+}
+
+/* 難易度選択ボタンのコンテナ */
+#start-screen .difficulty-selector {
+    display: flex; /* ボタンを横並びにする */
+    gap: 40px;     /* ボタンとボタンの間隔 */
+}
+
+/* ボタンの共通スタイル */
+#start-screen .btn {
+    display: inline-block;
+    padding: 15px 40px;
+    border: 3px solid #f0f0f0;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #f0f0f0;
+    text-decoration: none; /* aタグの下線を消す */
+    font-family: 'Press Start 2P', cursive; /* ドット絵風フォント */
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease; /* アニメーションを滑らかに */
+}
+
+/* ボタンにマウスが乗った時のスタイル */
+#start-screen .btn:hover {
+    background-color: #f0f0f0;
+    color: #1a1a1a;
+    transform: translateY(-5px); /* 少し上に動かす */
+    box-shadow: 0 8px 15px rgba(255, 255, 255, 0.2);
+}
+
+/* easyボタンのスタイル */
+#start-screen .easy-btn {
+    /* クリックできないことを示唆するスタイル */
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#start-screen .easy-btn:hover {
+    /* ホバーしてもスタイルが変わらないように初期化 */
+    background-color: transparent;
+    color: #f0f0f0;
+    transform: none;
+    box-shadow: none;
+}
