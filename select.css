@@ -1,0 +1,30 @@
+/* 石板選択画面専用の追加スタイル */
+body {
+    margin: 3% 10% 0% 10%;
+}
+.slate {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-content: center;
+}
+.stone {
+    cursor: pointer;
+}
+.stone_nohover {
+    /* 拡大時のスタイルはmain.cssと同じ */
+}
+.backbutton {
+    margin: 30px auto 0 auto;
+    display: block;
+    padding: 12px 32px;
+    font-size: 1.2em;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.backbutton:hover {
+    background-color: #0056b3;
+}
