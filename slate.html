@@ -1,22 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">    
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slate Example</title>
-    <link rel="stylesheet" href="main.css">
-    
+    <title>コード表示画面 | 失われたロジック（仮）</title>
+    <link rel="stylesheet" href="temp_common.css">
+    <link rel="stylesheet" href="code_view.css">
 </head>
 <body>
-    <div class="slate">
-    <div id="slate0" class="stone">aaa</div>
-    <div id="slate1" class="stone">aaa</div>
-    <div id="slate2" class="stone">aaa</div>
-    <div id="slate3" class="stone">aaa</div>
-    <div id="slate4" class="stone">aaa</div>
-    <div id="slate5" class="stone">aaa</div>
+
+    <div class="container">
+        <div class="code-panel">
+            <header class="panel-header">
+                <h2 id="slate-title">第一の石版</h2>
+            </header>
+            <main class="panel-body">
+                <div class="code-block">
+                    <pre><code id="code-display"></code></pre>
+                </div>
+                <button id="next-slate-button" class="change-button">次の石版へ</button>
+            </main>
+        </div>
+
+        <div class="answer-panel">
+            <header class="panel-header">
+                <h2>パスワード入力</h2>
+            </header>
+            <main class="panel-body">
+                <p>石版の暗号を解き明かし、宝箱を開けるためのパスワードを入力せよ。</p>
+                <form id="password-form">
+                    <div class="password-inputs">
+                        <input type="text" maxlength="1" required>
+                        <input type="text" maxlength="1" required>
+                        <input type="text" maxlength="1" required>
+                        <input type="text" maxlength="1" required>
+                        <input type="text" maxlength="1" required>
+                        <input type="text" maxlength="1" required>
+                    </div>
+                    <button type="submit" class="submit-button">宝箱を開ける</button>
+                </form>
+            </main>
+        </div>
     </div>
 
-    </body>
     <script src="slate.js"></script>
+
+</body>
 </html>
