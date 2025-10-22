@@ -91,9 +91,28 @@ next_val = sequence[<span class="number">4</span>] + sequence[<span class="numbe
 const slateTitleElement = document.getElementById('slate-title');
 const codeDisplayElement = document.getElementById('code-display');
 const nextButton = document.getElementById('next-slate-button');
+// 追加: 一覧に戻るボタン
+const backToSelectButton = document.getElementById('back-to-select-button');
 
 // 現在表示している石版の番号を管理する変数
 let currentSlateIndex = 0;
+
+// クエリパラメータから index を読み取れるようにする（例: slate.html?index=2）
+(function () {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const p = params.get('index');
+        if (p !== null) {
+            const n = parseInt(p, 10);
+            if (!Number.isNaN(n) && n >= 0 && n < slateData.length) {
+                currentSlateIndex = n;
+            }
+        }
+    } catch (e) {
+        // 何かあっても既定値 0 を使う
+        console.warn('クエリパラメータの解析に失敗しました:', e);
+    }
+})();
 
 // 指定された番号の石版データを表示する関数
 function displaySlate(index) {
@@ -115,6 +134,13 @@ nextButton.addEventListener('click', () => {
     displaySlate(currentSlateIndex);
 });
 
+// 追加: 一覧に戻る処理（select.html へ遷移）
+if (backToSelectButton) {
+    backToSelectButton.addEventListener('click', () => {
+        // そのまま選択画面に戻る（必要ならクエリで currentSlateIndex を渡すことも可能）
+        window.location.href = 'select.html';
+    });
+}
 
 // --- 最初にページが読み込まれた時に、最初の石版を表示する ---
 window.addEventListener('DOMContentLoaded', () => {
