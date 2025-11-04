@@ -22,5 +22,9 @@
             </div>
         </div>
     </main>
+    <script>
+        // メインメニュー表示時に保存データをクリア（万が一の保険）
+        try { localStorage.removeItem('slate_quest_answers_v1'); } catch (e) { console.warn(e); }
+    </script>
 </body>
 </html>
