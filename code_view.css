@@ -2,25 +2,23 @@
    コードと回答欄がある画面用のスタイル
    ================================= */
 
-/* 全体を囲むコンテナ */
+/* (既存の .container, .code-panel, .answer-panel スタイル ... ) */
 .container {
     display: flex;
-    gap: 20px; /* パネル間の隙間 */
-    padding: 20px;
+    gap: 20px;
+    padding: 24px;
     height: 100vh;
-    box-sizing: border-box; /* paddingを含めて高さを100vhにする */
+    box-sizing: border-box;
 }
-
-/* 左右のパネル共通スタイル */
 .code-panel,
 .answer-panel {
-    flex: 1; /* 幅を均等に分ける */
+    flex: 1;
     background-color: #ffffff;
     border: 1px solid #d1d1d1;
     border-radius: 8px;
     display: flex;
-    flex-direction: column; /* ヘッダーとボディを縦に並べる */
-    overflow: hidden; /* 角丸を維持するため */
+    flex-direction: column;
+    overflow: hidden;
 }
 
 /* パネルのヘッダー */
@@ -30,121 +28,257 @@
     border-bottom: 1px solid #d1d1d1;
 }
 
+/* ★修正: h2のマージンをリセット (IDバッジ追加のため) */
 .panel-header h2 {
-    margin: 0;
+    margin: 0; /* 'margin: 0 0 12px 0' から変更 */
     font-size: 1.2em;
-    color: #333;
+    color: var(--text);
 }
 
-/* パネルのボディ */
+/* (既存の .panel-body, .code-block スタイル ... ) */
 .panel-body {
-    padding: 20px;
-    flex-grow: 1; /* 残りの高さをすべて使う */
-    overflow-y: auto; /* 内容が多ければスクロール */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
 }
-
-/* コード表示ブロック */
+.panel-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            transparent 0,
+            rgba(0,0,0,0.02) 1px,
+            transparent 2px
+        ),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.1;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
 .code-block {
-    background-color: #f0f0f0;
-    border-radius: 5px;
+    flex: 1;
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 14px;
+    overflow-y: auto;
+    color: #111;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+    box-shadow: inset 0 -6px 12px rgba(0,0,0,0.02);
+}
+.code-block::-webkit-scrollbar { width: 8px; }
+.code-block::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); border-radius: 4px; }
+.code-block::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+.code-block::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+.button-container {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 16px;
+}
+.code-block .keyword { color: #0077ff; font-weight: bold; }
+.code-block .number { color: #d9480f; }
+.code-block .string { color: #2b9a2b; }
+.code-block .function { color: #8f00a3; }
+.code-block .comment { color: #999999; font-style: italic; }
+
+/* (既存の .change-button, アニメーション スタイル ... ) */
+.change-button{
+    margin-top: 12px;
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: linear-gradient(180deg,#f0fbff,#e8f7ff);
+    color: var(--accent-cyan);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.change-button:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.1);
+}
+.code-block {
+    transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 320ms cubic-bezier(.2,.9,.2,1), filter 320ms;
+    will-change: transform, opacity;
+}
+.code-block.anim-out {
+    transform: translateX(-18px) scale(0.985);
+    opacity: 0;
+    filter: blur(3px);
+}
+@keyframes code-in {
+    0%   { transform: translateX(18px) scale(1.01); opacity: 0; filter: blur(2px); }
+    60%  { transform: translateX(-6px) scale(0.995); opacity: 1; filter: blur(0); }
+    100% { transform: translateX(0) scale(1); opacity: 1; filter: blur(0); }
+}
+.code-block.anim-in {
+    animation: code-in 360ms cubic-bezier(.2,.9,.2,1) both;
+}
+@media (prefers-reduced-motion: reduce){
+    .code-block, .change-button { animation: none !important; transition: none !important; transform: none !important; }
 }
 
-.code-block pre {
-    margin: 0;
-    padding: 1em;
-    font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
-    font-size: 0.95em;
-    line-height: 1.6;
-    white-space: pre-wrap; /* 横に長くなりすぎたら折り返す */
+/* (既存のボタン色, パスワード入力欄, ライフ表示 スタイル ... ) */
+#next-slate-button {
+    background: linear-gradient(180deg, #40c057, #37b24d);
+    color: #ffffff;
+    border: 1px solid rgba(0,0,0,0.1);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
 }
-
-/* シンタックスハイライト（色分け）のサンプル */
-.code-block .keyword {
-    color: #0077ff; /* 青色 */
-    font-weight: bold;
+#next-slate-button:hover {
+    background: linear-gradient(180deg, #48cf64, #3fb956);
 }
-.code-block .number {
-    color: #d9480f; /* オレンジ色 */
+#back-to-select-button {
+    background: linear-gradient(180deg, #f8f9fa, #e9ecef);
+    color: #343a40;
+    border: 1px solid rgba(0,0,0,0.1);
 }
-.code-block .string {
-    color: #2b9a2b; /* 緑色 */
+#back-to-select-button:hover {
+     background: linear-gradient(180deg, #ffffff, #f1f3f5);
 }
-.code-block .function {
-    color: #8f00a3; /* 紫色 */
+.password-inputs input {
+    width: 44px;
+    height: 48px;
+    padding: 6px 8px;
+    margin: 0 6px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: var(--text, #111111);
+    text-align: center;
+    font-size: 1rem;
+    font-family: inherit;
+    box-shadow: inset 0 -2px 6px rgba(0,0,0,0.03);
+    outline: none;
 }
-.code-block .comment {
-    color: #999999; /*灰色 */
-    font-style: italic;
+.password-inputs input:focus {
+    border-color: rgba(0,163,214,0.18);
+    box-shadow: 0 6px 18px rgba(0,163,214,0.06);
 }
-
-
-/* --- 回答パネル側のスタイル --- */
-.answer-panel p {
-    margin-top: 0;
-    line-height: 1.7;
-}
-
-#password-form {
-    margin-top: 24px;
-}
-
 .password-inputs {
     display: flex;
+    justify-content: center;
     gap: 10px;
-    justify-content: center; /* 入力欄を中央に配置 */
-    margin-bottom: 30px;
+    margin-bottom: 18px;
+    flex-wrap: nowrap;
 }
-
-.password-inputs input {
-    width: 50px;
-    height: 60px;
-    text-align: center;
-    font-size: 2em;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-/* 入力欄にフォーカスが当たった時のスタイル */
-.password-inputs input:focus {
-    outline: none;
-    border-color: #0077ff;
-    box-shadow: 0 0 5px rgba(0, 119, 255, 0.5);
-}
-
 .submit-button {
     display: block;
-    width: 100%;
-    padding: 15px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #fff;
-    background-color: #28a745; /* 緑色 */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    margin: 18px auto 0 auto;
+    padding: 10px 18px;
+    border-radius: 8px;
 }
-
-.submit-button:hover {
-    background-color: #218838; /* 少し濃い緑色 */
-}
-
 .change-button {
     display: block;
     width: 100%;
-    margin-top: 20px;
-    padding: 12px;
-    font-size: 1em;
-    font-weight: bold;
-    color: #fff;
-    background-color: #007bff; /* 青色 */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    max-width: 360px;
+    margin: 12px auto 0 auto;
+    box-sizing: border-box;
+}
+@media (min-width: 900px) and (orientation: landscape) {
+    .change-button {
+        max-width: 420px;
+    }
+}
+@media (max-width: 480px) {
+    .password-inputs input { width: 40px; height: 44px; }
+    .change-button { max-width: calc(100% - 32px); margin-left: 16px; margin-right: 16px; }
+}
+#life-display-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 8px;
+    background: rgba(0,0,0,0.02);
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.04);
+    font-family: "DotGothic16", sans-serif;
+    color: #444;
+}
+#life-display {
+    display: flex;
+    gap: 5px;
+}
+.life-heart {
+    font-size: 1.3rem;
+    color: #ff4757;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-.change-button:hover {
-    background-color: #0056b3; /* 少し濃い青色 */
+/* ★追加: IDバッジのスタイル */
+.slate-id-badge {
+    display: block;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 0.8rem;
+    color: var(--accent-cyan, #00a3d6);
+    font-weight: bold;
+    margin-bottom: 8px; /* h2との間隔 */
+}
+
+/* (既存の #cleared-mark, .form-cleared スタイル ... ) */
+#cleared-mark {
+    color: #1a7e3a;
+    font-size: 0.8em;
+    font-family: "DotGothic16", sans-serif;
+    margin-left: 8px;
+}
+.form-cleared {
+    opacity: 0.6;
+}
+.form-cleared input,
+.form-cleared button[type="submit"] {
+    background-color: #eee;
+    cursor: not-allowed;
+}
+
+/* (既存の .result-overlay スタイル ... ) */
+.result-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.result-box {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 300px;
+}
+.result-box.success {
+    background: linear-gradient(180deg, #ebfff3, #d1ffdc);
+    border: 1px solid #a3e4b5;
+}
+.result-box.failure {
+    background: linear-gradient(180deg, #fff0f0, #ffe6e6);
+    border: 1px solid #e4a3a3;
+}
+.return-button {
+    margin-top: 16px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+.game-over .result-box {
+    background: linear-gradient(180deg, #2b2b2b, #1a1a1a);
+    color: #fff;
+    border: 1px solid #444;
 }

@@ -13,7 +13,7 @@
 <body>
     <main>
         <div id="start-screen">
-            <h1 class="game-title">失われし文字</h1>
+            <img src="images/code_logo.png" alt="失われし文字" class="game-logo">
             
             <div class="difficulty-selector">
                 <a href="javascript:void(0)" class="btn easy-btn">easy</a>
@@ -23,8 +23,20 @@
         </div>
     </main>
     <script>
-        // メインメニュー表示時に保存データをクリア（万が一の保険）
-        try { localStorage.removeItem('slate_quest_answers_v1'); } catch (e) { console.warn(e); }
+        // ★修正: ゲーム開始時に全ての関連データをクリア
+        try {
+            // 入力途中のパスワード
+            localStorage.removeItem('slate_quest_answers_v1');
+            // ライフ、クリア状況
+            localStorage.removeItem('slate_quest_state_v1');
+            // 計測開始時刻
+            localStorage.removeItem('startTime');
+            // (リザルトデータは result.js が削除するが、念のため)
+            localStorage.removeItem('finalClearTime');
+            localStorage.removeItem('finalMistakeCount');
+        } catch (e) { 
+            console.warn("localStorage のクリアに失敗:", e); 
+        }
     </script>
 </body>
 </html>
