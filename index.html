@@ -16,26 +16,67 @@
             <img src="images/code_logo.png" alt="失われし文字" class="game-logo">
             
             <div class="difficulty-selector">
-                <a href="javascript:void(0)" class="btn easy-btn">easy</a>
+                <a href="select2.html" class="btn easy-btn">easy</a>
                 
                 <a href="select.html" class="btn normal-btn">normal</a>
             </div>
         </div>
     </main>
     <script>
-        // ★修正: ゲーム開始時に全ての関連データをクリア
-        try {
-            // 入力途中のパスワード
-            localStorage.removeItem('slate_quest_answers_v1');
-            // ライフ、クリア状況
-            localStorage.removeItem('slate_quest_state_v1');
-            // 計測開始時刻
-            localStorage.removeItem('startTime');
-            // (リザルトデータは result.js が削除するが、念のため)
-            localStorage.removeItem('finalClearTime');
-            localStorage.removeItem('finalMistakeCount');
-        } catch (e) { 
-            console.warn("localStorage のクリアに失敗:", e); 
+        // ★修正: ゲーム開始時に「両方」のモードのデータをクリア
+        function clearAllGameData() {
+            try {
+                // --- localStorage のクリア (既存) ---
+                localStorage.removeItem('slate_quest_answers_v1_normal');
+                localStorage.removeItem('slate_quest_state_v1_normal');
+                localStorage.removeItem('startTime_normal');
+                localStorage.removeItem('finalClearTime_normal');
+                localStorage.removeItem('finalMistakeCount_normal');
+    
+                localStorage.removeItem('slate_quest_answers_v1_easy');
+                localStorage.removeItem('slate_quest_state_v1_easy');
+                localStorage.removeItem('startTime_easy');
+                localStorage.removeItem('finalClearTime_easy');
+                localStorage.removeItem('finalMistakeCount_easy');
+                
+                localStorage.removeItem('slate_quest_answers_v1');
+                localStorage.removeItem('slate_quest_state_v1');
+                localStorage.removeItem('startTime');
+
+                // ★★★ ここから追加 ★★★
+                // --- sessionStorage のクリア (Normalモードの問題パターン) ---
+                // (slate.js で定義されているキー)
+                sessionStorage.removeItem('gimmick1_combination');
+                sessionStorage.removeItem('gimmick2_combination');
+                sessionStorage.removeItem('gimmick3_combination');
+                sessionStorage.removeItem('gimmick4_combination');
+                // ★★★ ここまで追加 ★★★
+    
+            } catch (e) {
+                console.warn("ストレージのクリアに失敗:", e);
+            }
+        }
+    
+        // ★追加: ボタンにイベントリスナーを設定
+        const easyBtn = document.querySelector('.easy-btn');
+        const normalBtn = document.querySelector('.normal-btn');
+    
+        if (easyBtn) {
+            easyBtn.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                clearAllGameData();
+                sessionStorage.setItem('gameMode', 'easy');
+                window.location.href = easyBtn.href;
+            });
+        }
+    
+        if (normalBtn) {
+            normalBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearAllGameData();
+                sessionStorage.setItem('gameMode', 'normal');
+                window.location.href = normalBtn.href;
+            });
         }
     </script>
 </body>

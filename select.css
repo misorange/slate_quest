@@ -44,7 +44,6 @@ body {
     justify-content: center;
 }
 
-/* (既存の :hover, .cleared, .stone::before スタイル...) */
 .stone:hover {
     transform: translateY(-8px) scale(1.03);
     box-shadow: 
@@ -83,14 +82,13 @@ body {
     border-radius: inherit;
 }
 
-/* (既存の .stone-plate, .stone-title, .stone-sub, .stone-cleared-mark スタイル...) */
 .stone-plate {
     text-align: center;
     pointer-events: none; 
 }
 .stone-title {
     font-family: "Press Start 2P", "DotGothic16", sans-serif;
-    font-size: 1.0rem;
+    font-size: 1.5rem;
     letter-spacing: 0.12em;
     color: #413a33;
     text-shadow:
@@ -101,7 +99,7 @@ body {
 }
 .stone-sub {
     font-family: "DotGothic16", sans-serif;
-    font-size: 0.78rem;
+    font-size: 1.0rem;
     color: rgba(65, 58, 51, 0.8);
     opacity: 0.92;
     letter-spacing: 0.06em;
@@ -122,7 +120,6 @@ body {
     text-shadow: 0 1px 1px rgba(255,255,255,0.2);
 }
 
-/* (既存のレスポンシブスタイル...) */
 @media (max-width: 640px) { /* ブレークポイントを調整 */
     body { padding: 20px; } 
     .slate { 
@@ -137,7 +134,6 @@ body {
     .stone-sub { font-size: 0.7rem; }
 }
 
-/* (既存の .backbutton スタイル...) */
 .backbutton {
     margin: 30px auto 0 auto;
     display: block;
@@ -153,26 +149,5 @@ body {
     background-color: #0056b3;
 }
 
-/* (既存のアニメーション @keyframes stoneIn ...) */
-@keyframes stoneIn {
-    0% { opacity: 0; transform: translateY(18px) scale(0.99); filter: blur(2px); }
-    60% { opacity: 1; transform: translateY(-4px) scale(1.01); filter: blur(0); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.slate .stone {
-    opacity: 0;
-    transform: translateY(18px) scale(0.99);
-    animation: stoneIn 520ms cubic-bezier(.2,.9,.2,1) forwards;
-}
-
-/* ★修正: 4つまでに変更 */
-.slate .stone:nth-child(1){ animation-delay: 0.08s; }
-.slate .stone:nth-child(2){ animation-delay: 0.18s; }
-.slate .stone:nth-child(3){ animation-delay: 0.28s; }
-.slate .stone:nth-child(4){ animation-delay: 0.38s; }
-/* :nth-child(5) と (6) を削除 */
-
-@media (prefers-reduced-motion: reduce) {
-    .slate .stone { animation: none !important; transform: none !important; opacity: 1 !important; }
-}
+/* ★ アニメーションは main.css 側に移動（統合）されました */
+/* .slate .stone アニメーションは main.css を参照 */

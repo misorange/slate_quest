@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // localStorage からキーを定義
-    const TIME_KEY = 'finalClearTime';
-    const MISTAKE_KEY = 'finalMistakeCount';
-    const START_TIME_KEY = 'startTime';
+    // ★修正: game-keys.js から動的キーを取得
+    const TIME_KEY = window.GAME_KEYS.FINAL_TIME;
+    const MISTAKE_KEY = window.GAME_KEYS.FINAL_MISTAKES;
+    const START_TIME_KEY = window.GAME_KEYS.START_TIME;
 
     // 表示要素を取得
     const timeElement = document.getElementById('clear-time');
@@ -14,23 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isNaN(ms) || ms < 0) {
             return "00:00:00";
         }
-        
-        // 1. 合計の秒数を計算 (ミリ秒を切り捨て)
         let totalSeconds = Math.floor(ms / 1000);
-        
-        // 2. 時間を計算
         let hours = Math.floor(totalSeconds / 3600);
-        totalSeconds %= 3600; // 残りの秒数
-        
-        // 3. 分を計算
+        totalSeconds %= 3600;
         let minutes = Math.floor(totalSeconds / 60);
-        
-        // 4. 秒を計算
         let seconds = totalSeconds % 60;
-        
-        // 5. ゼロパディングして HH:MM:SS 形式にする
         const pad = (num) => String(num).padStart(2, '0');
-        
         return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     }
 
@@ -54,16 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ★重要: 結果を表示したら、リロードで再表示されないよう関連データを削除
-    // (ただし、ゲーム状態 'slate_quest_state_v1' などはタイトルに戻るまで保持)
     try {
         localStorage.removeItem(TIME_KEY);
         localStorage.removeItem(MISTAKE_KEY);
-        // startTime もここで消しておくと、タイトルから戻った時に再計測される
         localStorage.removeItem(START_TIME_KEY); 
     } catch (e) {
         console.warn("リザルトデータのクリーンアップに失敗しました。", e);
     }
-
-    // 「タイトルへ戻る」ボタンで index.html に遷移する際、
-    // index.html 側のスクリプトが残りのゲームデータをクリアします。
 });
