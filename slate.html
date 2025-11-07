@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>コード表示画面 | 失われたロジック（仮）</title>
-    <link rel="stylesheet" href="temp_common.css">
+    <title>コード表示画面 | 失われし文字</title>
+    
+    <link rel="stylesheet" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="code_view.css">
 </head>
 <body>
@@ -12,27 +17,36 @@
     <div class="container">
         <div class="code-panel">
             <header class="panel-header">
-                <h2 id="slate-title" style="margin:0;">第一の石版</h2>
+                <span id="slate-id-badge" class="slate-id-badge"></span>
+                <h2 id="slate-title" style="margin:0;">失われし知の石版</h2>
             </header>
             <main class="panel-body">
                 <div class="code-block">
                     <pre><code id="code-display"></code></pre>
                 </div>
-                <button id="next-slate-button" class="change-button">次の石板へ</button>
-                <button id="back-to-select-button" class="change-button">一覧に戻る</button>
+                <div class="button-container">
+                    <button id="next-slate-button" class="change-button">次の石板へ</button>
+                    <button id="back-to-select-button" class="change-button">一覧に戻る</button>
+                </div>
             </main>
         </div>
 
         <div class="answer-panel">
             <header class="panel-header">
+                <span id="password-id-badge" class="slate-id-badge"></span>
                 <h2>パスワード入力</h2>
             </header>
             <main class="panel-body">
+                
+                <div id="life-display-container">
+                    <span>残り試行回数:</span>
+                    <div id="life-display">
+                        </div>
+                </div>
+
                 <p>石版の暗号を解き明かし、宝箱を開けるためのパスワードを入力せよ。</p>
                 <form id="password-form">
                     <div class="password-inputs">
-                        <input type="text" maxlength="1" required>
-                        <input type="text" maxlength="1" required>
                         <input type="text" maxlength="1" required>
                         <input type="text" maxlength="1" required>
                         <input type="text" maxlength="1" required>

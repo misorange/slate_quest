@@ -1,19 +1,143 @@
 /* 石板選択画面専用の追加スタイル */
 body {
-    margin: 3% 10% 0% 10%;
+    padding: 40px; 
+    margin: 0;
 }
+
 .slate {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    /* ★修正: 最小幅を広げ、PCでは2列で大きく表示されるように調整 */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px; 
+    justify-content: center;
+    max-width: 900px; /* 2列表示時の最大幅を調整 */
+    margin: 0 auto; 
+}
+
+/* 石板のスタイル */
+.stone {
+    position: relative;
+    padding: 24px;
+    border-radius: 12px; 
+    cursor: pointer;
+    overflow: hidden;
+    background: linear-gradient(165deg, 
+        #d8d2ca 0%, 
+        #c5bfb8 40%,
+        #b7b1a9 100% 
+    );
+    border: 1px solid rgba(0,0,0,0.15); 
+    box-shadow: 
+        0 16px 32px rgba(0,0,0,0.2),
+        inset 0 4px 6px rgba(255,255,255,0.2),
+        inset 0 -6px 12px rgba(0,0,0,0.15);
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms;
+    width: 100%;
+    
+    /* ★修正: 高さを大きく */
+    height: 320px; 
+    
+    max-height: none;
+    min-width: unset;
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
-.stone {
-    cursor: pointer;
+
+/* (既存の :hover, .cleared, .stone::before スタイル...) */
+.stone:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 
+        0 24px 48px rgba(0,0,0,0.25),
+        inset 0 4px 6px rgba(255,255,255,0.2),
+        inset 0 -6px 12px rgba(0,0,0,0.15);
 }
-.stone_nohover {
-    /* 拡大時のスタイルはmain.cssと同じ */
+.stone.cleared {
+    cursor: default;
+    background: linear-gradient(165deg, 
+        #c0c0c0 0%, 
+        #b0b0b0 40%,
+        #a0a0a0 100%
+    );
+    opacity: 0.7;
+    box-shadow: 
+        0 8px 16px rgba(0,0,0,0.1),
+        inset 0 2px 4px rgba(255,255,255,0.1),
+        inset 0 -4px 8px rgba(0,0,0,0.1);
 }
+.stone.cleared:hover {
+    transform: none;
+    box-shadow: 
+        0 8px 16px rgba(0,0,0,0.1),
+        inset 0 2px 4px rgba(255,255,255,0.1),
+        inset 0 -4px 8px rgba(0,0,0,0.1);
+}
+.stone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.3' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+/* (既存の .stone-plate, .stone-title, .stone-sub, .stone-cleared-mark スタイル...) */
+.stone-plate {
+    text-align: center;
+    pointer-events: none; 
+}
+.stone-title {
+    font-family: "Press Start 2P", "DotGothic16", sans-serif;
+    font-size: 1.0rem;
+    letter-spacing: 0.12em;
+    color: #413a33;
+    text-shadow:
+        0 2px 2px rgba(255,255,255,0.4),
+        0 -1px 1px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+    margin-bottom: 6px;
+}
+.stone-sub {
+    font-family: "DotGothic16", sans-serif;
+    font-size: 0.78rem;
+    color: rgba(65, 58, 51, 0.8);
+    opacity: 0.92;
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+}
+.stone-cleared-mark {
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 0.85rem;
+    color: #1a7e3a;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
+    margin-top: 12px;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+}
+.stone.cleared .stone-title,
+.stone.cleared .stone-sub {
+    color: #555;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.2);
+}
+
+/* (既存のレスポンシブスタイル...) */
+@media (max-width: 640px) { /* ブレークポイントを調整 */
+    body { padding: 20px; } 
+    .slate { 
+        gap: 20px; 
+        grid-template-columns: 1fr; /* スマホでは1列 */
+    }
+    .stone { 
+        height: 240px; /* スマホでの高さを調整 */
+        padding: 14px; 
+    }
+    .stone-title { font-size: 0.92rem; }
+    .stone-sub { font-size: 0.7rem; }
+}
+
+/* (既存の .backbutton スタイル...) */
 .backbutton {
     margin: 30px auto 0 auto;
     display: block;
@@ -27,4 +151,28 @@ body {
 }
 .backbutton:hover {
     background-color: #0056b3;
+}
+
+/* (既存のアニメーション @keyframes stoneIn ...) */
+@keyframes stoneIn {
+    0% { opacity: 0; transform: translateY(18px) scale(0.99); filter: blur(2px); }
+    60% { opacity: 1; transform: translateY(-4px) scale(1.01); filter: blur(0); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.slate .stone {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+    animation: stoneIn 520ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+/* ★修正: 4つまでに変更 */
+.slate .stone:nth-child(1){ animation-delay: 0.08s; }
+.slate .stone:nth-child(2){ animation-delay: 0.18s; }
+.slate .stone:nth-child(3){ animation-delay: 0.28s; }
+.slate .stone:nth-child(4){ animation-delay: 0.38s; }
+/* :nth-child(5) と (6) を削除 */
+
+@media (prefers-reduced-motion: reduce) {
+    .slate .stone { animation: none !important; transform: none !important; opacity: 1 !important; }
 }
