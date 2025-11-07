@@ -294,7 +294,7 @@ function getGimmick1Code() {
                 const answer = getGimmick1Answer(initIndex, mainIndex, finIndex);
                 window.generatedAnswers = window.generatedAnswers || {};
                 window.generatedAnswers[0] = answer;
-                if (slateData && slateData[0]) slateData[0].answer = answer;
+                if (normalSlateData && normalSlateData[0]) normalSlateData[0].answer = answer;
                 console.log(`Gimmick1 computed answer: ${answer} (init:${initIndex}, main:${mainIndex}, fin:${finIndex})`);
             } else {
                 console.warn('getGimmick1Answer is not defined. Ensure calc_1.js is loaded before slate.js');
@@ -352,7 +352,7 @@ function getGimmick2Code() {
         // 答えを保存
         window.generatedAnswers = window.generatedAnswers || {};
         window.generatedAnswers[1] = answer;
-        if (slateData && slateData[1]) slateData[1].answer = answer;
+        if (normalSlateData && normalSlateData[1]) normalSlateData[1].answer = answer;
 
         console.log(`Gimmick 2 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 
@@ -399,7 +399,7 @@ function getGimmick3Code() {
         // 答えを保存
         window.generatedAnswers = window.generatedAnswers || {};
         window.generatedAnswers[1] = answer;
-        if (slateData && slateData[1]) slateData[1].answer = answer;
+        if (normalSlateData && normalSlateData[1]) normalSlateData[1].answer = answer;
 
         console.log(`Gimmick 3 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 
@@ -446,7 +446,7 @@ function getGimmick4Code() {
         // 答えを保存
         window.generatedAnswers = window.generatedAnswers || {};
         window.generatedAnswers[1] = answer;
-        if (slateData && slateData[1]) slateData[1].answer = answer;
+        if (normalSlateData && normalSlateData[1]) normalSlateData[1].answer = answer;
 
         console.log(`Gimmick 4 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 

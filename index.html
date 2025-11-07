@@ -196,6 +196,7 @@
                             
                             try {
                                 localStorage.setItem('uid', uid);
+                                localStorage.setItem('correctAnswers', '0');
                             } catch (e) {
                                 console.warn("localStorage への保存に失敗:", e);
                                 resultEl.textContent = "IDの保存に失敗しました。";
@@ -204,7 +205,7 @@
                             }
 
                             stopQRCodeReader(true); 
-                            window.location.href = 'select.html'; 
+                            window.location.href = 'index.html'; 
                         }
                     }
                     if (err && err.name !== 'NotFoundException') {
