@@ -196,6 +196,21 @@ function getGimmick1Code() {
         const randomMain = gimmick1MainData[mainIndex].prob;
         const randomFin = gimmick1FinData[finIndex].fin;
 
+        try {
+            if (typeof getGimmick1Answer === 'function') {
+                const answer = getGimmick1Answer(initIndex, mainIndex, finIndex);
+                window.generatedAnswers = window.generatedAnswers || {};
+                window.generatedAnswers[0] = answer;
+                if (slateData && slateData[0]) slateData[0].answer = answer;
+                console.log(`Gimmick1 computed answer: ${answer} (init:${initIndex}, main:${mainIndex}, fin:${finIndex})`);
+            } else {
+                console.warn('getGimmick1Answer is not defined. Ensure calc_1.js is loaded before slate.js');
+            }
+        } catch (err) {
+            console.warn('Failed to compute Gimmick1 answer:', err);
+        }
+
+
         // どのデータが使われたかコンソールに記録
         console.log(`Gimmick 1 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
 
