@@ -48,7 +48,7 @@ const gimmick2InitializationData = [
         "num": 2, "init_data":"chant data = [\"x\", \"a\", \"g\", \"p\"]\nchant pos = [3, 1, 4]"
     },
     {
-        "num": 3, "init_data":"chant data = [100, 20, 300, 40]"
+        "num": 3, "init_data":"chant data = [100, 20, 300, 4]"
     }
 ];
 const gimmick2MainData = [
@@ -77,6 +77,90 @@ const gimmick2FinData = [
     {
         "num": 3,
         "fin": "set final = final + 2\nreveal final"
+    }
+];
+
+const gimmick2AnswerData = [
+    {
+        "id": "000", "ans": "SUCj"
+    },
+    {
+        "id": "001", "ans": "SUCj"
+    },
+    {
+        "id": "002", "ans": "SUCj"
+    },
+    {
+        "id": "010", "ans": "SUC5"
+    },
+    {
+        "id": "011", "ans": "SUC5"
+    },
+    {
+        "id": "012", "ans": "SUC5"
+    },
+    {
+        "id": "020", "ans": "ERRs"
+    },
+    {
+        "id": "021", "ans": "ERRs"
+    },
+    {
+        "id": "022", "ans": "ERRs"
+    },
+    {
+        "id": "100", "ans": "ERR7"
+    },
+    {
+        "id": "101", "ans": "ERR7"
+    },
+    {
+        "id": "102", "ans": "ERR7"
+    },
+    {
+        "id": "110", "ans": "ERRx"
+    },
+    {
+        "id": "111", "ans": "ERRx"
+    },
+    {
+        "id": "112", "ans": "ERRx"
+    },
+    {
+        "id": "120", "ans": "ERR}"
+    },
+    {
+        "id": "121", "ans": "ERR}"
+    },
+    {
+        "id": "122", "ans": "ERR}"
+    },
+    {
+        "id": "200", "ans": "SUCl"
+    },
+    {
+        "id": "201", "ans": "SUCl"
+    },
+    {
+        "id": "202", "ans": "SUCl"
+    },
+    {
+        "id": "210", "ans": "ERR4"
+    },
+    {
+        "id": "211", "ans": "ERR4"
+    },
+    {
+        "id": "212", "ans": "ERR4"
+    },
+    {
+        "id": "220", "ans": "ERRl"
+    },
+    {
+        "id": "221", "ans": "ERRl"
+    },
+    {
+        "id": "222", "ans": "ERRl"
     }
 ];
 
@@ -124,6 +208,10 @@ const gimmick3FinData = [
     }
 ];
 
+const gimmick3AnswerData = [
+    //3つ目のギミック用の回答データここにかけえええええええええええ！！！！！！！！！！！！！！
+];
+
 // gimmick_4 のデータを直接埋め込む
 const gimmick4InitializationData = [
     {
@@ -166,6 +254,10 @@ const gimmick4FinData = [
         "num": 3,
         "fin": "set final = final + 11\nreveal final"
     }
+];
+
+const gimmick4AnswerData = [
+    //4つ目のギミック用の回答データここにかけえええええええええええ！！！！！！！！！！！！！！
 ];
 
 function getGimmick1Code() {
@@ -252,8 +344,17 @@ function getGimmick2Code() {
         const randomMain = gimmick2MainData[mainIndex].prob;
         const randomFin = gimmick2FinData[finIndex].fin;
 
-        // どのデータが使われたかコンソールに記録
-        console.log(`Gimmick 2 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+        // 答えを ans_2.json から取得
+        const answerId = `${initIndex}${mainIndex}${finIndex}`;
+        const answerData = gimmick2AnswerData.find(item => item.id === answerId);
+        const answer = answerData ? answerData.ans : "ERR0";
+
+        // 答えを保存
+        window.generatedAnswers = window.generatedAnswers || {};
+        window.generatedAnswers[1] = answer;
+        if (slateData && slateData[1]) slateData[1].answer = answer;
+
+        console.log(`Gimmick 2 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 
         return `${randomInit}
 ${randomMain}
@@ -291,7 +392,16 @@ function getGimmick3Code() {
         const randomMain = gimmick3MainData[mainIndex].prob;
         const randomFin = gimmick3FinData[finIndex].fin;
 
-        console.log(`Gimmick 3 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+         const answerId = `${initIndex}${mainIndex}${finIndex}`;
+        const answerData = gimmick3AnswerData.find(item => item.id === answerId);
+        const answer = answerData ? answerData.ans : "ERR0";
+
+        // 答えを保存
+        window.generatedAnswers = window.generatedAnswers || {};
+        window.generatedAnswers[1] = answer;
+        if (slateData && slateData[1]) slateData[1].answer = answer;
+
+        console.log(`Gimmick 3 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 
         return `${randomInit}
 ${randomMain}
@@ -329,7 +439,16 @@ function getGimmick4Code() {
         const randomMain = gimmick4MainData[mainIndex].prob;
         const randomFin = gimmick4FinData[finIndex].fin;
 
-        console.log(`Gimmick 4 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+        const answerId = `${initIndex}${mainIndex}${finIndex}`;
+        const answerData = gimmick4AnswerData.find(item => item.id === answerId);
+        const answer = answerData ? answerData.ans : "ERR0";
+
+        // 答えを保存
+        window.generatedAnswers = window.generatedAnswers || {};
+        window.generatedAnswers[1] = answer;
+        if (slateData && slateData[1]) slateData[1].answer = answer;
+
+        console.log(`Gimmick 4 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 
         return `${randomInit}
 ${randomMain}
