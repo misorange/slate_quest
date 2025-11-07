@@ -915,7 +915,7 @@ function showResult({ success, message, isGameClear = false }) {
             } catch (e) {
                 console.warn('chFlag main call failed:', e);
             }
-            window.location.href = 'select.html';
+            window.location.href = backUrl;
         } else {
             overlay.remove();
         }
