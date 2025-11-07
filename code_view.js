@@ -1,5 +1,5 @@
-// localStorage 用キー (入力内容保存用)
-const STORAGE_KEY_INPUTS = 'slate_quest_answers_v1';
+// ★修正: game-keys.js から動的キーを取得
+const STORAGE_KEY_INPUTS = window.GAME_KEYS.INPUTS;
 
 // --- 保存・復元ヘルパー (グローバルスコープまたは window オブジェクトに登録) ---
 function readStore() {
@@ -25,7 +25,8 @@ function writeStore(obj) {
  * @param {HTMLInputElement[]} inputs 入力欄のDOM要素の配列
  */
 window.saveInputsForIndex = function(index, inputs) {
-    if (typeof index === 'undefined' || !inputs) return;
+    // ★ 修正: currentSlateIndex が 0 の場合も動作するように typeof チェックを修正
+    if (typeof index === 'undefined' || index === null || !inputs) return;
     const obj = readStore();
     obj[String(index)] = inputs.map(i => i.value || '').join('');
     writeStore(obj);
@@ -37,15 +38,11 @@ window.saveInputsForIndex = function(index, inputs) {
  * @param {HTMLInputElement[]} inputs 入力欄のDOM要素の配列
  */
 window.loadInputsForIndex = function(index, inputs) {
-    if (typeof index === 'undefined' || !inputs) return;
+    // ★ 修正: currentSlateIndex が 0 の場合も動作するように typeof チェックを修正
+    if (typeof index === 'undefined' || index === null || !inputs) return;
     const obj = readStore();
     const val = String(obj[String(index)] || '');
     
-    // ★修正: 
-    // val があってもなくても (val が空文字でも)、
-    // inputs 配列の長さ分ループを実行し、
-    // 該当する文字 (val.charAt(i)) または 空文字 (|| '') をセットする。
-    // これにより、val がない (空文字) の場合、入力欄が確実にクリアされる。
     for (let i = 0; i < inputs.length; i++) {
         if(inputs[i]) {
             inputs[i].value = val.charAt(i) || ''; 
@@ -58,7 +55,8 @@ window.loadInputsForIndex = function(index, inputs) {
  * @param {number} index 石版のインデックス
  */
 window.clearInputsForIndex = function(index) {
-    if (typeof index === 'undefined') return;
+    // ★ 修正: currentSlateIndex が 0 の場合も動作するように typeof チェックを修正
+    if (typeof index === 'undefined' || index === null) return;
     const obj = readStore();
     delete obj[String(index)];
     writeStore(obj);
@@ -71,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inputs = Array.from(form.querySelectorAll('input[type="text"]'));
 
-    // (既存の入力制御リスナー... input, keydown, paste)
+    // (入力制御リスナー... input, keydown, paste)
     inputs.forEach((input, idx) => {
         input.setAttribute('inputmode', 'numeric'); 
         input.addEventListener('input', (e) => {
@@ -83,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (v.length === 1 && idx < inputs.length - 1) {
                 inputs[idx + 1].focus();
             }
+            // ★ 修正: slate.js で定義されるグローバル変数 'currentSlateIndex' を参照
             if (typeof currentSlateIndex !== 'undefined') {
                 window.saveInputsForIndex(currentSlateIndex, inputs);
             }
@@ -102,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(inputs[i]) inputs[i].value = text.charAt(i) || '';
             }
             inputs[Math.min(text.length, inputs.length) - 1]?.focus();
+            // ★ 修正: slate.js で定義されるグローバル変数 'currentSlateIndex' を参照
             if (typeof currentSlateIndex !== 'undefined') {
                 window.saveInputsForIndex(currentSlateIndex, inputs);
             }
@@ -109,31 +109,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 初期ロード時に保存済みがあれば復元
+    // ★ 修正: slate.js で定義されるグローバル変数 'currentSlateIndex' を参照
     if (typeof currentSlateIndex !== 'undefined') {
         window.loadInputsForIndex(currentSlateIndex, inputs);
     }
 
-    // (既存のボタンリスナー... backBtn, nextBtn)
+    // (ボタンリスナー... backBtn, nextBtn)
+    
+    // ★★★ ここが修正点 ★★★
+    // 「一覧に戻る」ボタンの処理
     const backBtn = document.getElementById('back-to-select-button');
     if (backBtn) {
         backBtn.addEventListener('click', () => {
+            // 1. まず入力を保存 (slate.js の 'currentSlateIndex' を参照)
             if (typeof currentSlateIndex !== 'undefined') {
                 window.saveInputsForIndex(currentSlateIndex, inputs);
             }
+            
+            // 2. slate.js で定義されたグローバル変数 'window.GAME_BACK_URL' に遷移
+            // (デフォルトは 'select.html')
+            const targetUrl = window.GAME_BACK_URL || 'select.html';
+            window.location.href = targetUrl;
         });
     }
     
     const nextBtn = document.getElementById('next-slate-button');
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
+             // ★ 修正: slate.js で定義されるグローバル変数 'currentSlateIndex' を参照
              if (typeof currentSlateIndex !== 'undefined') {
                 window.saveInputsForIndex(currentSlateIndex, inputs);
             }
         });
     }
 
-    // (既存の beforeunload リスナー)
+    // (beforeunload リスナー)
     window.addEventListener('beforeunload', () => {
+        // ★ 修正: slate.js で定義されるグローバル変数 'currentSlateIndex' を参照
         if (typeof currentSlateIndex !== 'undefined') {
             window.saveInputsForIndex(currentSlateIndex, inputs);
         }

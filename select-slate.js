@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const stones = Array.from(document.querySelectorAll('.stone'));
     
-    // ゲーム状態の localStorage キー
-    const STORAGE_KEY_GAME_STATE = 'slate_quest_state_v1';
-    // ★追加: 開始時刻の localStorage キー
-    const START_TIME_KEY = 'startTime';
+    // ★修正: game-keys.js から動的キーを取得
+    const STORAGE_KEY_GAME_STATE = window.GAME_KEYS.STATE;
+    const START_TIME_KEY = window.GAME_KEYS.START_TIME;
 
-    // ★追加: ゲーム開始時刻を記録 (まだ記録されていなければ)
+    // ★修正: ゲーム開始時刻を記録 (まだ記録されていなければ)
     try {
         if (!localStorage.getItem(START_TIME_KEY)) {
             localStorage.setItem(START_TIME_KEY, Date.now());
@@ -18,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // クリア状態を localStorage から読み込む
     let clearedSlates = [];
     try {
+        // ★修正: 動的キーを使用
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_GAME_STATE));
         if (saved && saved.clearedSlates) {
             clearedSlates = saved.clearedSlates;
@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // クリアしてない石版にだけクリックイベントを設定
             el.addEventListener('click', (event) => {
                 const idx = event.currentTarget.dataset.index || i;
-                // slate.html にインデックスを渡して遷移
+                
+                // ★修正: 遷移先を slate.html に統一
+                // (slate.js 側でモードを判別して表示内容を切り替える)
                 window.location.href = `slate.html?index=${idx}`;
             }, { once: true });
         }

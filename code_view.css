@@ -2,7 +2,6 @@
    コードと回答欄がある画面用のスタイル
    ================================= */
 
-/* (既存の .container, .code-panel, .answer-panel スタイル ... ) */
 .container {
     display: flex;
     gap: 20px;
@@ -35,17 +34,16 @@
     color: var(--text);
 }
 
-/* (既存の .panel-body, .code-block スタイル ... ) */
 .panel-body {
     flex: 1;
     display: flex;
     flex-direction: column;
     background: #fff;
     padding: 18px;
-    border-radius: 8px;
+    /* ★ 修正: border-radius は親 .code-panel/answer-panel が持つため削除 */
     box-shadow: 0 8px 30px rgba(0,0,0,0.05);
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* ★重要: 子要素がはみ出ないように */
 }
 .panel-body::before {
     content: '';
@@ -64,11 +62,11 @@
     pointer-events: none;
 }
 .code-block {
-    flex: 1;
+    flex: 1; /* ★重要: 親の空きスペースを埋める */
     background: #fafafa;
     border-radius: 8px;
     padding: 14px;
-    overflow-y: auto;
+    overflow-y: auto; /* ★重要: 内容がはみ出たらスクロール */
     color: #111;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
     box-shadow: inset 0 -6px 12px rgba(0,0,0,0.02);
@@ -78,6 +76,7 @@
 .code-block::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); border-radius: 4px; }
 .code-block::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
 .code-block::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+
 .button-container {
     margin-top: 16px;
     display: flex;
@@ -92,7 +91,6 @@
 .code-block .function { color: #8f00a3; }
 .code-block .comment { color: #999999; font-style: italic; }
 
-/* (既存の .change-button, アニメーション スタイル ... ) */
 .change-button{
     margin-top: 12px;
     padding: 12px 18px;
@@ -108,6 +106,8 @@
     transform: translateY(-3px);
     box-shadow: 0 10px 28px rgba(0,0,0,0.1);
 }
+
+/* アニメーション */
 .code-block {
     transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 320ms cubic-bezier(.2,.9,.2,1), filter 320ms;
     will-change: transform, opacity;
@@ -129,7 +129,7 @@
     .code-block, .change-button { animation: none !important; transition: none !important; transform: none !important; }
 }
 
-/* (既存のボタン色, パスワード入力欄, ライフ表示 スタイル ... ) */
+/* (ボタン色, パスワード入力欄, ライフ表示 スタイル ... ) */
 #next-slate-button {
     background: linear-gradient(180deg, #40c057, #37b24d);
     color: #ffffff;
@@ -178,6 +178,7 @@
     margin: 18px auto 0 auto;
     padding: 10px 18px;
     border-radius: 8px;
+    /* (色は .change-button のものを継承) */
 }
 .change-button {
     display: block;
@@ -228,7 +229,7 @@
     margin-bottom: 8px; /* h2との間隔 */
 }
 
-/* (既存の #cleared-mark, .form-cleared スタイル ... ) */
+/* (クリア済み, オーバーレイ スタイル ... ) */
 #cleared-mark {
     color: #1a7e3a;
     font-size: 0.8em;
@@ -243,8 +244,6 @@
     background-color: #eee;
     cursor: not-allowed;
 }
-
-/* (既存の .result-overlay スタイル ... ) */
 .result-overlay {
     position: fixed;
     inset: 0;
@@ -282,4 +281,34 @@
     background: linear-gradient(180deg, #2b2b2b, #1a1a1a);
     color: #fff;
     border: 1px solid #444;
+}
+
+/* =================================
+   ★修正: Easyモード (画像表示) 用
+   ================================= */
+.code-block.image-mode {
+    padding: 0; /* パディングを削除 */
+    background: #ffffff;
+    box-shadow: none;
+    
+    /* ★追加: flexコンテナ化して画像を中央揃えに */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.code-block.image-mode img {
+    /* ★修正: アスペクト比を保つため width/height は auto に */
+    width: auto;
+    height: auto;
+    
+    /* ★重要: 親のコンテナからはみ出さない */
+    max-width: 100%;
+    max-height: 100%;
+    
+    /* ★重要: アスペクト比を保ったままコンテナに収める */
+    object-fit: contain; 
+    
+    display: block; 
+    border-radius: 8px;
+    image-rendering: crisp-edges;
 }

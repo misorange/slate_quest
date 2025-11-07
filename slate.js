@@ -1,3 +1,6 @@
+// =============================================
+// ★ Normal モード用データ (GitHub版ベース)
+// =============================================
 // gimmick_1 のデータを直接埋め込む
 const gimmick1InitializationData = [
     {
@@ -266,13 +269,11 @@ function getGimmick1Code() {
         const storedCombination = sessionStorage.getItem('gimmick1_combination');
 
         if (storedCombination) {
-            // 保存された組み合わせがあれば、それを使用する
             const combo = JSON.parse(storedCombination);
             initIndex = combo.init;
             mainIndex = combo.main;
             finIndex = combo.fin;
         } else {
-            // 保存されていなければ、新しく生成して保存する
             initIndex = Math.floor(Math.random() * gimmick1InitializationData.length);
             mainIndex = Math.floor(Math.random() * gimmick1MainData.length);
             finIndex = Math.floor(Math.random() * gimmick1FinData.length);
@@ -322,13 +323,11 @@ function getGimmick2Code() {
         const storedCombination = sessionStorage.getItem('gimmick2_combination');
 
         if (storedCombination) {
-            // 保存された組み合わせがあれば、それを使用する
             const combo = JSON.parse(storedCombination);
             initIndex = combo.init;
             mainIndex = combo.main;
             finIndex = combo.fin;
         } else {
-            // 保存されていなければ、新しく生成して保存する
             initIndex = Math.floor(Math.random() * gimmick2InitializationData.length);
             mainIndex = Math.floor(Math.random() * gimmick2MainData.length);
             finIndex = Math.floor(Math.random() * gimmick2FinData.length);
@@ -344,6 +343,7 @@ function getGimmick2Code() {
         const randomMain = gimmick2MainData[mainIndex].prob;
         const randomFin = gimmick2FinData[finIndex].fin;
 
+        console.log(`Gimmick 2 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
         // 答えを ans_2.json から取得
         const answerId = `${initIndex}${mainIndex}${finIndex}`;
         const answerData = gimmick2AnswerData.find(item => item.id === answerId);
@@ -460,131 +460,158 @@ ${randomFin}`;
     }
 }
 
-// 表示する石版のデータを配列で管理
-// HTMLで色付けするための<span>タグも一緒に文字列として含めておきます。
-const slateData = [
+// ★ Normalモード用 石板データ (GitHub版のロジックを使用)
+const normalSlateData = [
     {
+        type: "code",
         title: "いにしえの言葉が刻まれし石板",
         getCode: getGimmick1Code,
         answer: "1234" // (1234に統一)
     },
     {
+        type: "code",
         title: "時を超えし叡智の石版",
         getCode: getGimmick2Code,
         answer: "1234" // (1234に統一)
     },
     {
+        type: "code",
         title: "謎めきし符号の石版",
         getCode: getGimmick3Code,
         answer: "1234" // (1234に統一)
     },
     {
+        type: "code",
         title: "深遠なる思考の石版",
         getCode: getGimmick4Code,
         answer: "1234" // (1234に統一)
     }
 ];
 
+// =============================================
+// ★ Easy モード用データ
+// =============================================
+const easySlateData = [
+    {
+        type: "image",
+        title: "第一の石板 (Easy) 絵が示すものを英語で入力しよう",
+        imageUrl: "images/good.png", 
+        answer: "good"
+    },
+    {
+        type: "image",
+        title: "第二の石板 (Easy) 絵が示すものを英語で入力しよう",
+        imageUrl: "images/milk.png", 
+        answer: "milk"
+    }
+];
+
+
+// =============================================
+// ★ モード判別と共通ロジック
+// =============================================
+
+// ★ game-keys.js のモード定義に基づいて分岐
+const IS_EASY_MODE = (window.GAME_KEYS.MODE === 'easy');
+const activeSlateData = IS_EASY_MODE ? easySlateData : normalSlateData;
+const INITIAL_ATTEMPTS = IS_EASY_MODE ? 5 : 3; // Easy: 5回, Normal: 3回
+const backUrl = IS_EASY_MODE ? 'select2.html' : 'select.html';
+
+// ★ 修正: 戻り先URLをグローバルに公開し、code_view.js から参照できるようにする
+window.GAME_BACK_URL = backUrl;
+
 // HTMLの要素を取得
 const slateTitleElement = document.getElementById('slate-title');
-const codeDisplayElement = document.getElementById('code-display');
+const codeBlockElement = document.querySelector('.code-block'); 
 const nextButton = document.getElementById('next-slate-button');
-const backToSelectButton = document.getElementById('back-to-select-button');
-// ★追加: IDバッジの要素を取得
+const backToSelectButton = document.getElementById('back-to-select-button'); 
 const slateIdBadge = document.getElementById('slate-id-badge'); 
 const passwordIdBadge = document.getElementById('password-id-badge');
 
+// ★ 修正: この変数をグローバルスコープに公開 (code_view.js で参照するため)
+var currentSlateIndex = 0;
 
-// 現在表示している石版の番号を管理する変数
-let currentSlateIndex = 0;
-
-// クエリパラメータから index を読み取れるようにする（例: slate.html?index=2）
+// クエリパラメータから index を読み取る
 (function () {
     try {
         const params = new URLSearchParams(window.location.search);
         const p = params.get('index');
         if (p !== null) {
             const n = parseInt(p, 10);
-            if (!Number.isNaN(n) && n >= 0 && n < slateData.length) {
+            if (!Number.isNaN(n) && n >= 0 && n < activeSlateData.length) {
                 currentSlateIndex = n;
             }
         }
     } catch (e) {
-        // 何かあっても既定値 0 を使う
         console.warn('クエリパラメータの解析に失敗しました:', e);
     }
 })();
 
-
-// 指定された番号の石版データを表示する関数
+// displaySlate 関数 (Easy/Normal 統合・修正版)
 function displaySlate(index) {
-    const slate = slateData[index];
+    const slate = activeSlateData[index];
     slateTitleElement.textContent = slate.title;
-    
-    // ★修正: getCodeが関数であれば呼び出す
-    if (typeof slate.getCode === 'function') {
-        codeDisplayElement.innerHTML = slate.getCode();
-    } else {
-        codeDisplayElement.innerHTML = slate.code;
+
+    if (!codeBlockElement) return; 
+
+    // ★ 分岐: Easy (image) か Normal (code) か
+    if (slate.type === 'image' && slate.imageUrl) {
+        // --- Easyモード (画像) ---
+        codeBlockElement.innerHTML = `<img src="${slate.imageUrl}" alt="${slate.title} の画像">`;
+        codeBlockElement.classList.add('image-mode');
+    } else if (slate.type === 'code' && typeof slate.getCode === 'function') {
+        // --- Normalモード (コード) ---
+        const codeHtml = slate.getCode();
+        codeBlockElement.innerHTML = `<pre><code id="code-display">${codeHtml}</code></pre>`;
+        codeBlockElement.classList.remove('image-mode');
     }
 
-    // ★追加: IDバッジのテキストを更新
-    const romanNumerals = ["I", "II", "III", "IV"]; // 石板は4つのため
-    const slateIdText = `STONE ${romanNumerals[index] || (index + 1)}`; // 1ベースのIDを生成
+    // IDバッジのテキストを更新 (共通)
+    const romanNumerals = ["I", "II", "III", "IV", "V", "VI"]; 
+    const slateIdText = `STONE ${romanNumerals[index] || (index + 1)}`; 
     
     if (slateIdBadge) {
         slateIdBadge.textContent = slateIdText;
     }
     if (passwordIdBadge) {
-        // パスワード側には、どの石板のパスワードかを明記
         passwordIdBadge.textContent = `${slateIdText} - PASSWORD`;
     }
 }
 
-// 新: コード領域をアニメーションで差し替えるヘルパー
-async function animateTransitionTo(newIndex) {
-    const block = document.querySelector('.code-block');
+// アニメーションの対象を codeBlockElement に変更
+function animateTransitionTo(newIndex) {
+    const block = codeBlockElement; 
     if (!block) {
-        // 万一要素が無ければ即時差し替え
         currentSlateIndex = newIndex;
         displaySlate(currentSlateIndex);
         return;
     }
 
-    // 既にアウト中なら無視しておく
     if (block.classList.contains('anim-out')) return;
 
-    // アウトアニメーションを開始
     block.classList.remove('anim-in');
-    // force style flush
     void block.offsetWidth;
     block.classList.add('anim-out');
 
-    // アウト完了で内容を差し替え、インアニメーションを出す
     const onTransitionEnd = (ev) => {
-        // 遷移終了はopacity/transformに反応する。重複回避のため常にリスナを外す
         block.removeEventListener('transitionend', onTransitionEnd);
 
         currentSlateIndex = newIndex;
         displaySlate(currentSlateIndex);
         
-        // ★追加: 次の石版の入力内容を復元
+        // ★ 共通: 次の石版の入力内容を復元
         if (typeof window.loadInputsForIndex === 'function') {
             const form = document.getElementById('password-form');
             const inputs = form ? Array.from(form.querySelectorAll('input[type="text"]')) : [];
             window.loadInputsForIndex(currentSlateIndex, inputs);
         }
-        // ★追加: 次の石版のクリア状態を反映
+        // ★ 共通: 次の石版のクリア状態を反映
         updateClearedDisplay(gameState.clearedSlates.includes(currentSlateIndex));
 
-        // 少し遅延を入れてインアニメーション（滑らかさのため）
         requestAnimationFrame(() => {
-            block.classList.remove('anim-out');
-            // 強制再描画してからインクラスを付与
+            block.classList.remove('anim-out'); 
             void block.offsetWidth;
-            block.classList.add('anim-in');
-
-            // アニメーション終了後にクラスをクリア
+            block.classList.add('anim-in'); 
             const onAnimEnd = () => {
                 block.removeEventListener('animationend', onAnimEnd);
                 block.classList.remove('anim-in');
@@ -595,30 +622,25 @@ async function animateTransitionTo(newIndex) {
     block.addEventListener('transitionend', onTransitionEnd);
 }
 
-// 「次の石版へ」ボタンがクリックされた時の処理（差し替え）
+// 「次の石版へ」ボタン (共通)
 nextButton.addEventListener('click', () => {
-    // (入力内容の保存は code_view.js 側で行う)
-    const targetIndex = (currentSlateIndex + 1) % slateData.length;
+    // ★ 修正: 入力保存は code_view.js 側で行う
+    const targetIndex = (currentSlateIndex + 1) % activeSlateData.length;
     animateTransitionTo(targetIndex);
 });
 
-// 追加: 一覧に戻る処理（select.html へ遷移）
-if (backToSelectButton) {
-    backToSelectButton.addEventListener('click', () => {
-        // (入力内容の保存は code_view.js 側で行う)
-        window.location.href = 'select.html';
-    });
-}
 
-// ローカルストレージのキーを定義 (ゲーム状態保存用)
-const STORAGE_KEY_GAME_STATE = 'slate_quest_state_v1';
+// =============================================
+// ★ ゲーム状態管理 (修正)
+// =============================================
 
-// ゲーム状態の管理
+// ★ 修正: game-keys.js の動的キーを使用
+const STORAGE_KEY_GAME_STATE = window.GAME_KEYS.STATE;
+
 const gameState = {
-    remainingAttempts: 3,  // 残り試行回数 (3回)
-    clearedSlates: [],     // クリア済み石版のインデックス
+    remainingAttempts: INITIAL_ATTEMPTS, 
+    clearedSlates: [],     
     
-    // 状態の保存
     save() {
         localStorage.setItem(STORAGE_KEY_GAME_STATE, JSON.stringify({
             remainingAttempts: this.remainingAttempts,
@@ -626,49 +648,48 @@ const gameState = {
         }));
     },
     
-    // 状態の読み込み
     load() {
         try {
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_GAME_STATE));
             if (saved) {
-                // remainingAttempts はセーブデータから読み込む
-                this.remainingAttempts = saved.remainingAttempts;
+                this.remainingAttempts = saved.remainingAttempts; 
                 this.clearedSlates = saved.clearedSlates || [];
                 
-                // もしライフが0以下になっていたらリセット
                 if (this.remainingAttempts <= 0) {
                     this.reset();
                 }
+            } else {
+                this.remainingAttempts = INITIAL_ATTEMPTS;
             }
         } catch (e) {
             console.warn('状態の読み込みに失敗:', e);
-            this.reset(); // 読み込み失敗時はリセット
+            this.reset();
         }
     },
     
-    // ★修正: reset 時に startTime もクリア
     reset() {
-        this.remainingAttempts = 3;
+        this.remainingAttempts = INITIAL_ATTEMPTS; 
         this.clearedSlates = [];
         this.save();
-        // ★追加: 入力内容と開始時刻もすべてクリア
          try { 
-             localStorage.removeItem('slate_quest_answers_v1'); 
-             localStorage.removeItem('startTime'); // ★追加
+             localStorage.removeItem(window.GAME_KEYS.INPUTS); 
+             localStorage.removeItem(window.GAME_KEYS.START_TIME);
              sessionStorage.removeItem('gimmick1_combination');
+             sessionStorage.removeItem('gimmick2_combination');
+             sessionStorage.removeItem('gimmick3_combination');
+             sessionStorage.removeItem('gimmick4_combination');
          } catch(e) {}
     }
 };
 
-// ライフ表示を更新する関数
+// ライフ表示を更新する関数 (共通)
 function updateLifeDisplay() {
     const lifeContainer = document.getElementById('life-display');
     if (!lifeContainer) return;
     
-    lifeContainer.innerHTML = ''; // いったん空にする
+    lifeContainer.innerHTML = '';
     const lives = gameState.remainingAttempts;
 
-    // ライフの数だけハートを表示
     for (let i = 0; i < lives; i++) {
         const heart = document.createElement('span');
         heart.textContent = '❤️';
@@ -677,18 +698,16 @@ function updateLifeDisplay() {
     }
 }
 
-// ★追加: クリア済み表示を更新する関数
+// クリア済み表示を更新する関数 (共通)
 function updateClearedDisplay(isCleared) {
     const titleElement = document.getElementById('slate-title');
     const form = document.getElementById('password-form');
     const inputs = form ? Array.from(form.querySelectorAll('input[type="text"]')) : [];
     const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
     
-    // クリア済み表示用の要素を探す
     let clearedMark = document.getElementById('cleared-mark');
     
     if (isCleared) {
-        // --- クリア済みの表示 ---
         if (!clearedMark && titleElement) {
             clearedMark = document.createElement('span');
             clearedMark.id = 'cleared-mark';
@@ -696,18 +715,15 @@ function updateClearedDisplay(isCleared) {
             titleElement.appendChild(clearedMark);
         }
         
-        // フォームを無効化
         if (form) {
             inputs.forEach(input => input.disabled = true);
             if (submitBtn) submitBtn.disabled = true;
             form.classList.add('form-cleared');
         }
     } else {
-        // --- 未クリアの表示 (主に「次の石版へ」で切り替わった時用) ---
         if (clearedMark) {
             clearedMark.remove();
         }
-        // フォームを有効化
         if (form) {
             inputs.forEach(input => input.disabled = false);
             if (submitBtn) submitBtn.disabled = false;
@@ -716,41 +732,35 @@ function updateClearedDisplay(isCleared) {
     }
 }
 
-// パスワード判定処理
+// パスワード判定処理 (★ 修正: game-keys, INITIAL_ATTEMPTS 使用)
 function checkPassword(enteredPassword) {
-    const currentSlate = slateData[currentSlateIndex];
+    const currentSlate = activeSlateData[currentSlateIndex];
     
-    // ★追加: 既にクリア済みかチェック
     if (gameState.clearedSlates.includes(currentSlateIndex)) {
         showResult({ success: false, message: "この石版はクリア済みです" });
         return;
     }
 
     if (enteredPassword === currentSlate.answer) {
-        // 正解
         if (!gameState.clearedSlates.includes(currentSlateIndex)) {
             gameState.clearedSlates.push(currentSlateIndex);
             gameState.save();
         }
         
-        // ★追加: 正解したら保存されていた入力内容をクリア
         if (typeof window.clearInputsForIndex === 'function') {
             window.clearInputsForIndex(currentSlateIndex);
         }
 
-        const isGameClear = gameState.clearedSlates.length === slateData.length;
+        const isGameClear = gameState.clearedSlates.length === activeSlateData.length;
 
-        // ★追加: ゲームクリアの場合、リザルト情報を保存
         if (isGameClear) {
             try {
-                // クリア時間を計算
-                const startTime = parseInt(localStorage.getItem('startTime'), 10);
+                const startTime = parseInt(localStorage.getItem(window.GAME_KEYS.START_TIME), 10);
                 const clearTimeMs = Date.now() - startTime;
-                localStorage.setItem('finalClearTime', clearTimeMs);
+                localStorage.setItem(window.GAME_KEYS.FINAL_TIME, clearTimeMs);
 
-                // 誤答回数を計算 (初期ライフ 3 - 残りライフ)
-                const mistakeCount = 3 - gameState.remainingAttempts;
-                localStorage.setItem('finalMistakeCount', mistakeCount);
+                const mistakeCount = INITIAL_ATTEMPTS - gameState.remainingAttempts;
+                localStorage.setItem(window.GAME_KEYS.FINAL_MISTAKES, mistakeCount);
 
             } catch (e) {
                 console.warn("リザルトデータの保存に失敗:", e);
@@ -763,34 +773,31 @@ function checkPassword(enteredPassword) {
             isGameClear: isGameClear
         });
         
-        // ★追加: クリア状態を即時反映
         updateClearedDisplay(true);
 
     } else {
         // 不正解
         gameState.remainingAttempts--;
         gameState.save();
-        updateLifeDisplay(); // ライフ表示を更新
+        updateLifeDisplay(); 
         
         if (gameState.remainingAttempts <= 0) {
-            // ゲームオーバー
             showGameOver();
         } else {
             showResult({
                 success: false,
-                message: `不正解... 残り${gameState.remainingAttempts}回`
+                message: `不正解... 残り試行回数 ${gameState.remainingAttempts} 回`
             });
         }
     }
 }
 
-// 結果表示UI
+// 結果表示UI (★ 修正: backUrl 使用)
 function showResult({ success, message, isGameClear = false }) {
     const overlay = document.createElement('div');
     overlay.className = 'result-overlay';
 
-    // ★修正: ゲームクリア時のボタンテキストを変更
-    const buttonText = isGameClear ? 'リザルト画面へ' : (success ? '石版一覧へ戻る' : '閉じる');
+    const buttonText = isGameClear ? 'リザルト画面へ' : (success ? '石板一覧へ戻る' : '閉じる');
 
     overlay.innerHTML = `
         <div class="result-box ${success ? 'success' : 'failure'}">
@@ -830,12 +837,10 @@ function showResult({ success, message, isGameClear = false }) {
             }
             window.location.href = 'select.html';
         } else {
-            // 不正解時、ゲームオーバーでない場合は閉じるだけ
             overlay.remove();
         }
     });
 
-    // 不正解時はオーバーレイ自体をクリックしても閉じられるように
     if (!success) {
          overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
@@ -847,7 +852,7 @@ function showResult({ success, message, isGameClear = false }) {
     document.body.appendChild(overlay);
 }
 
-// ゲームオーバー画面
+// ゲームオーバー画面 (共通)
 function showGameOver() {
     const overlay = document.createElement('div');
     overlay.className = 'result-overlay game-over';
@@ -880,18 +885,16 @@ function showGameOver() {
     document.body.appendChild(overlay);
 }
 
-// --- 最初にページが読み込まれた時に、最初の石版を表示する ---
+// --- ページ読み込み時の処理 --- (共通)
 window.addEventListener('DOMContentLoaded', () => {
     gameState.load();
-    updateLifeDisplay(); // ライフ表示を初期描画
-    displaySlate(currentSlateIndex); // ★この呼び出しでIDバッジも初期化されます
+    updateLifeDisplay(); 
+    displaySlate(currentSlateIndex); 
     
-    // ★追加: 読み込み時にクリア状態をチェック
     if (gameState.clearedSlates.includes(currentSlateIndex)) {
         updateClearedDisplay(true);
     }
     
-    // パスワードフォームのsubmitイベントを処理
     const form = document.getElementById('password-form');
     if (form) {
         form.addEventListener('submit', (e) => {
