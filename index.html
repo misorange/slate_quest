@@ -8,6 +8,42 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* ★追加: JSで表示/非表示を切り替えるためのクラス */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ★修正: QRリーダーセクションのスタイリング */
+        #qr-reader-section {
+            /* display: none; ← 削除 (hiddenクラスで制御) */
+            width: 100%;
+            
+            /* ★追加: 中身を中央揃えにするためのFlex設定 */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 水平方向の中央揃え */
+        }
+
+        /* 以下のスタイルは変更なし */
+        #preview {
+            width: 100vw;
+            max-width: 500px; 
+            aspect-ratio: 1;
+            margin: 0 auto;
+            border: 2px solid #ccc;
+        }
+        #qr-result-display {
+            font-size: 2vh;
+            text-align: center;
+            min-height: 2.5vh;
+            margin-top: 10px;
+        }
+        #cancel-qr-btn {
+            margin-top: 15px;
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
@@ -19,9 +55,17 @@
                 <a href="select2.html" class="btn easy-btn">easy</a>
                 
                 <a href="select.html" class="btn normal-btn">normal</a>
+                <a href="#" id="qr-start-btn" class="btn easy-btn">card scan</a>
+            </div>
+
+            <div id="qr-reader-section" class="hidden">
+                <video id="preview" playsinline></video>
+                <p id="qr-result-display">id: <span id="result">スキャン中...</span></p>
+                <button id="cancel-qr-btn" class="btn">キャンセル</button>
             </div>
         </div>
     </main>
+
     <script>
         // ★修正: ゲーム開始時に「両方」のモードのデータをクリア
         function clearAllGameData() {
@@ -78,6 +122,136 @@
                 window.location.href = normalBtn.href;
             });
         }
+    </script>
+
+    <script type="module">
+        import { BrowserMultiFormatReader } from "https://cdn.jsdelivr.net/npm/@zxing/browser@latest/+esm";
+
+        // DOM要素を取得
+        const qrStartBtn = document.getElementById('qr-start-btn');
+        const difficultySelector = document.querySelector('.difficulty-selector');
+        const qrReaderSection = document.getElementById('qr-reader-section');
+        const preview = document.getElementById('preview');
+        const resultEl = document.getElementById('result');
+        const cancelQrBtn = document.getElementById('cancel-qr-btn');
+        
+        // ★追加: ロゴ要素を取得
+        const gameLogo = document.querySelector('.game-logo');
+
+        const codeReader = new BrowserMultiFormatReader();
+        let stream = null; 
+
+        // QRリーダーを開始する関数
+        async function startQRCodeReader() {
+            try {
+                // ★修正: UI切り替え (inlineスタイルではなくクラスを操作)
+                difficultySelector.classList.add('hidden');
+                gameLogo.classList.add('hidden'); // ロゴも非表示
+                qrReaderSection.classList.remove('hidden'); // QRリーダーを表示
+
+                resultEl.textContent = "スキャン中..."; 
+
+                const constraints = {
+                    video: {
+                        facingMode: "environment" 
+                    }
+                };
+
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                preview.srcObject = stream;
+                preview.play(); 
+
+                codeReader.decodeFromStream(stream, preview, (result, err) => {
+                    if (result) {
+                        const text = result.getText();
+
+                        // QRテキストから id を抽出するヘルパー
+                        function extractIdFromQrText(txt) {
+                            if (!txt) return '';
+                            const t = txt.trim();
+                            // まず URL として解釈して検索パラメータから取得
+                            try {
+                                let maybeUrl = t;
+                                if (!/^https?:\/\//i.test(maybeUrl) && maybeUrl.includes('/')) {
+                                    maybeUrl = 'https://' + maybeUrl;
+                                }
+                                const u = new URL(maybeUrl);
+                                const id = u.searchParams.get('id') || u.searchParams.get('uid') || u.searchParams.get('userId');
+                                if (id) return id;
+                            } catch (e) {
+                                // URL として解析できない場合はフォールバックへ
+                            }
+                            // クエリ文字列・単純パターンから抽出
+                            const m = t.match(/[?&]id=([^&]+)/i) || t.match(/\bid=([^&\/\s]+)/i);
+                            if (m) return decodeURIComponent(m[1]);
+                            // 最終手段：全文を返す
+                            return t;
+                        }
+
+                        const uid = extractIdFromQrText(text);
+
+                        if (uid) {
+                            resultEl.textContent = `ID取得: ${uid}`;
+                            console.log('検出:', uid);
+                            
+                            try {
+                                localStorage.setItem('uid', uid);
+                            } catch (e) {
+                                console.warn("localStorage への保存に失敗:", e);
+                                resultEl.textContent = "IDの保存に失敗しました。";
+                                stopQRCodeReader(); 
+                                return;
+                            }
+
+                            stopQRCodeReader(true); 
+                            window.location.href = 'select.html'; 
+                        }
+                    }
+                    if (err && err.name !== 'NotFoundException') {
+                        console.error(err);
+                        resultEl.textContent = "読み取りエラーが発生しました。";
+                    }
+                });
+
+            } catch (err) {
+                console.error("カメラの起動に失敗しました。", err);
+                resultEl.textContent = "カメラの起動に失敗しました。";
+                
+                // ★修正: エラー時もクラスでUIを元に戻す
+                difficultySelector.classList.remove('hidden');
+                gameLogo.classList.remove('hidden'); // ロゴを表示
+                qrReaderSection.classList.add('hidden'); // QRリーダーを非表示
+            }
+        }
+
+        // QRリーダーを停止・キャンセルする関数
+        function stopQRCodeReader(keepUi = false) {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            
+            if (!keepUi) {
+                // ★修正: UIをクラスで元に戻す
+                difficultySelector.classList.remove('hidden');
+                gameLogo.classList.remove('hidden'); // ロゴを表示
+                qrReaderSection.classList.add('hidden'); // QRリーダーを非表示
+                resultEl.textContent = "スキャン中...";
+            }
+        }
+
+        // qrStartBtn のクリックイベント (変更なし)
+        qrStartBtn.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            startQRCodeReader();
+        });
+
+        // キャンセルボタンのクリックイベント (変更なし)
+        cancelQrBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            stopQRCodeReader();
+        });
+
     </script>
 </body>
 </html>

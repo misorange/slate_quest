@@ -51,7 +51,7 @@ const gimmick2InitializationData = [
         "num": 2, "init_data":"chant data = [\"x\", \"a\", \"g\", \"p\"]\nchant pos = [3, 1, 4]"
     },
     {
-        "num": 3, "init_data":"chant data = [100, 20, 300, 40]"
+        "num": 3, "init_data":"chant data = [100, 20, 300, 4]"
     }
 ];
 const gimmick2MainData = [
@@ -80,6 +80,90 @@ const gimmick2FinData = [
     {
         "num": 3,
         "fin": "set final = final + 2\nreveal final"
+    }
+];
+
+const gimmick2AnswerData = [
+    {
+        "id": "000", "ans": "SUCj"
+    },
+    {
+        "id": "001", "ans": "SUCj"
+    },
+    {
+        "id": "002", "ans": "SUCj"
+    },
+    {
+        "id": "010", "ans": "SUC5"
+    },
+    {
+        "id": "011", "ans": "SUC5"
+    },
+    {
+        "id": "012", "ans": "SUC5"
+    },
+    {
+        "id": "020", "ans": "ERRs"
+    },
+    {
+        "id": "021", "ans": "ERRs"
+    },
+    {
+        "id": "022", "ans": "ERRs"
+    },
+    {
+        "id": "100", "ans": "ERR7"
+    },
+    {
+        "id": "101", "ans": "ERR7"
+    },
+    {
+        "id": "102", "ans": "ERR7"
+    },
+    {
+        "id": "110", "ans": "ERRx"
+    },
+    {
+        "id": "111", "ans": "ERRx"
+    },
+    {
+        "id": "112", "ans": "ERRx"
+    },
+    {
+        "id": "120", "ans": "ERR}"
+    },
+    {
+        "id": "121", "ans": "ERR}"
+    },
+    {
+        "id": "122", "ans": "ERR}"
+    },
+    {
+        "id": "200", "ans": "SUCl"
+    },
+    {
+        "id": "201", "ans": "SUCl"
+    },
+    {
+        "id": "202", "ans": "SUCl"
+    },
+    {
+        "id": "210", "ans": "ERR4"
+    },
+    {
+        "id": "211", "ans": "ERR4"
+    },
+    {
+        "id": "212", "ans": "ERR4"
+    },
+    {
+        "id": "220", "ans": "ERRl"
+    },
+    {
+        "id": "221", "ans": "ERRl"
+    },
+    {
+        "id": "222", "ans": "ERRl"
     }
 ];
 
@@ -127,6 +211,10 @@ const gimmick3FinData = [
     }
 ];
 
+const gimmick3AnswerData = [
+    //3つ目のギミック用の回答データここにかけえええええええええええ！！！！！！！！！！！！！！
+];
+
 // gimmick_4 のデータを直接埋め込む
 const gimmick4InitializationData = [
     {
@@ -171,7 +259,10 @@ const gimmick4FinData = [
     }
 ];
 
-// ★ Normalモード用 コード生成関数 (GitHub版)
+const gimmick4AnswerData = [
+    //4つ目のギミック用の回答データここにかけえええええええええええ！！！！！！！！！！！！！！
+];
+
 function getGimmick1Code() {
     try {
         let initIndex, mainIndex, finIndex;
@@ -198,15 +289,26 @@ function getGimmick1Code() {
         const randomMain = gimmick1MainData[mainIndex].prob;
         const randomFin = gimmick1FinData[finIndex].fin;
 
+        try {
+            if (typeof getGimmick1Answer === 'function') {
+                const answer = getGimmick1Answer(initIndex, mainIndex, finIndex);
+                window.generatedAnswers = window.generatedAnswers || {};
+                window.generatedAnswers[0] = answer;
+                if (slateData && slateData[0]) slateData[0].answer = answer;
+                console.log(`Gimmick1 computed answer: ${answer} (init:${initIndex}, main:${mainIndex}, fin:${finIndex})`);
+            } else {
+                console.warn('getGimmick1Answer is not defined. Ensure calc_1.js is loaded before slate.js');
+            }
+        } catch (err) {
+            console.warn('Failed to compute Gimmick1 answer:', err);
+        }
+
+
+        // どのデータが使われたかコンソールに記録
         console.log(`Gimmick 1 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
-
-<span class="comment">// 以下、解読された処理内容</span>
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -242,14 +344,20 @@ function getGimmick2Code() {
         const randomFin = gimmick2FinData[finIndex].fin;
 
         console.log(`Gimmick 2 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+        // 答えを ans_2.json から取得
+        const answerId = `${initIndex}${mainIndex}${finIndex}`;
+        const answerData = gimmick2AnswerData.find(item => item.id === answerId);
+        const answer = answerData ? answerData.ans : "ERR0";
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
+        // 答えを保存
+        window.generatedAnswers = window.generatedAnswers || {};
+        window.generatedAnswers[1] = answer;
+        if (slateData && slateData[1]) slateData[1].answer = answer;
 
-<span class="comment">// 以下、解読された処理内容</span>
+        console.log(`Gimmick 2 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
+
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -284,15 +392,19 @@ function getGimmick3Code() {
         const randomMain = gimmick3MainData[mainIndex].prob;
         const randomFin = gimmick3FinData[finIndex].fin;
 
-        console.log(`Gimmick 3 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+         const answerId = `${initIndex}${mainIndex}${finIndex}`;
+        const answerData = gimmick3AnswerData.find(item => item.id === answerId);
+        const answer = answerData ? answerData.ans : "ERR0";
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
+        // 答えを保存
+        window.generatedAnswers = window.generatedAnswers || {};
+        window.generatedAnswers[1] = answer;
+        if (slateData && slateData[1]) slateData[1].answer = answer;
 
-<span class="comment">// 以下、解読された処理内容</span>
+        console.log(`Gimmick 3 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
+
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -327,15 +439,19 @@ function getGimmick4Code() {
         const randomMain = gimmick4MainData[mainIndex].prob;
         const randomFin = gimmick4FinData[finIndex].fin;
 
-        console.log(`Gimmick 4 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+        const answerId = `${initIndex}${mainIndex}${finIndex}`;
+        const answerData = gimmick4AnswerData.find(item => item.id === answerId);
+        const answer = answerData ? answerData.ans : "ERR0";
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
+        // 答えを保存
+        window.generatedAnswers = window.generatedAnswers || {};
+        window.generatedAnswers[1] = answer;
+        if (slateData && slateData[1]) slateData[1].answer = answer;
 
-<span class="comment">// 以下、解読された処理内容</span>
+        console.log(`Gimmick 4 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
+
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -695,11 +811,31 @@ function showResult({ success, message, isGameClear = false }) {
     
     const button = overlay.querySelector('button');
     button.addEventListener('click', () => {
+        // ★変更: ゲームクリア / 通常正解のとき chFlag.js の main を呼ぶ（存在すれば）
         if (isGameClear) {
-            window.location.href = 'result.html';
+            try {
+                // main が Promise を返しても await 風の挙動で完了後に遷移する
+                const p = (typeof main === 'function') ? Promise.resolve().then(() => main()) : Promise.resolve();
+                p.catch(e => console.warn('chFlag main error:', e)).finally(() => {
+                    window.location.href = 'result.html';
+                });
+            } catch (e) {
+                console.warn('chFlag main call failed:', e);
+                window.location.href = 'result.html';
+            }
         } else if (success) {
-            // ★ 修正: モード別の一覧画面に戻る (slate.js の先頭で定義した backUrl)
-            window.location.href = backUrl; 
+            localStorage.setItem('correctAnswers', gameState.clearedSlates.length);
+            const correctAnswers = localStorage.getItem('correctAnswers');
+            console.log(`Correct Answers: ${correctAnswers}`);
+            try {
+                if (typeof main === 'function') {
+                    // 通常正解時は非同期で呼び出して一覧に戻す（遷移を待たない）
+                    Promise.resolve().then(() => main()).catch(e => console.warn('chFlag main error:', e));
+                }
+            } catch (e) {
+                console.warn('chFlag main call failed:', e);
+            }
+            window.location.href = 'select.html';
         } else {
             overlay.remove();
         }
@@ -730,6 +866,18 @@ function showGameOver() {
     
     const button = overlay.querySelector('button');
     button.addEventListener('click', () => {
+        try {
+            // ゲームオーバー時にも chFlag.main を実行（存在すれば）
+            if (typeof main === 'function') {
+                Promise.resolve().then(() => main()).catch(e => console.warn('chFlag main error:', e)).finally(() => {
+                    gameState.reset();
+                    window.location.href = 'index.html';
+                });
+                return;
+            }
+        } catch (e) {
+            console.warn('chFlag main call failed:', e);
+        }
         gameState.reset();
         window.location.href = 'index.html';
     });
