@@ -199,13 +199,8 @@ function getGimmick1Code() {
         // どのデータが使われたかコンソールに記録
         console.log(`Gimmick 1 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
-
-<span class="comment">// 以下、解読された処理内容</span>
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -245,13 +240,8 @@ function getGimmick2Code() {
         // どのデータが使われたかコンソールに記録
         console.log(`Gimmick 2 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
-
-<span class="comment">// 以下、解読された処理内容</span>
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -288,13 +278,8 @@ function getGimmick3Code() {
 
         console.log(`Gimmick 3 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
-
-<span class="comment">// 以下、解読された処理内容</span>
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -331,13 +316,8 @@ function getGimmick4Code() {
 
         console.log(`Gimmick 4 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
 
-        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
-${randomInit}
-
-<span class="comment">// 以下、解読された処理内容</span>
+        return `${randomInit}
 ${randomMain}
-
-<span class="comment">// 最終的な儀式</span>
 ${randomFin}`;
 
     } catch (e) {
@@ -690,12 +670,30 @@ function showResult({ success, message, isGameClear = false }) {
     
     const button = overlay.querySelector('button');
     button.addEventListener('click', () => {
-        // ★修正: ゲームクリア時の遷移先を result.html に変更
+        // ★変更: ゲームクリア / 通常正解のとき chFlag.js の main を呼ぶ（存在すれば）
         if (isGameClear) {
-            // gameState.reset(); // リセットはタイトルに戻る時に行う
-            window.location.href = 'result.html';
+            try {
+                // main が Promise を返しても await 風の挙動で完了後に遷移する
+                const p = (typeof main === 'function') ? Promise.resolve().then(() => main()) : Promise.resolve();
+                p.catch(e => console.warn('chFlag main error:', e)).finally(() => {
+                    window.location.href = 'result.html';
+                });
+            } catch (e) {
+                console.warn('chFlag main call failed:', e);
+                window.location.href = 'result.html';
+            }
         } else if (success) {
-            // 正解時 (ゲームクリアでない) は一覧へ
+            localStorage.setItem('correctAnswers', gameState.clearedSlates.length);
+            const correctAnswers = localStorage.getItem('correctAnswers');
+            console.log(`Correct Answers: ${correctAnswers}`);
+            try {
+                if (typeof main === 'function') {
+                    // 通常正解時は非同期で呼び出して一覧に戻す（遷移を待たない）
+                    Promise.resolve().then(() => main()).catch(e => console.warn('chFlag main error:', e));
+                }
+            } catch (e) {
+                console.warn('chFlag main call failed:', e);
+            }
             window.location.href = 'select.html';
         } else {
             // 不正解時、ゲームオーバーでない場合は閉じるだけ
@@ -729,6 +727,18 @@ function showGameOver() {
     
     const button = overlay.querySelector('button');
     button.addEventListener('click', () => {
+        try {
+            // ゲームオーバー時にも chFlag.main を実行（存在すれば）
+            if (typeof main === 'function') {
+                Promise.resolve().then(() => main()).catch(e => console.warn('chFlag main error:', e)).finally(() => {
+                    gameState.reset();
+                    window.location.href = 'index.html';
+                });
+                return;
+            }
+        } catch (e) {
+            console.warn('chFlag main call failed:', e);
+        }
         gameState.reset();
         window.location.href = 'index.html';
     });
