@@ -398,8 +398,8 @@ function getGimmick3Code() {
 
         // 答えを保存
         window.generatedAnswers = window.generatedAnswers || {};
-        window.generatedAnswers[1] = answer;
-        if (normalSlateData && normalSlateData[1]) normalSlateData[1].answer = answer;
+        window.generatedAnswers[2] = answer;
+        if (normalSlateData && normalSlateData[2]) normalSlateData[2].answer = answer;
 
         console.log(`Gimmick 3 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 
@@ -445,8 +445,8 @@ function getGimmick4Code() {
 
         // 答えを保存
         window.generatedAnswers = window.generatedAnswers || {};
-        window.generatedAnswers[1] = answer;
-        if (normalSlateData && normalSlateData[1]) normalSlateData[1].answer = answer;
+        window.generatedAnswers[3] = answer;
+        if (normalSlateData && normalSlateData[3]) normalSlateData[3].answer = answer;
 
         console.log(`Gimmick 4 - Init:${initIndex} Main:${mainIndex} Fin:${finIndex} -> answer=${answer}`);
 
