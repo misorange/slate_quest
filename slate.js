@@ -39,6 +39,135 @@ const gimmick1FinData = [
     }
 ];
 
+// gimmick_2 のデータを直接埋め込む
+const gimmick2InitializationData = [
+    {
+        "num": 1, "init_data":"chant data = [5, 20, 15, 10, 25]"
+    },
+    {
+        "num": 2, "init_data":"chant data = [\"x\", \"a\", \"g\", \"p\"]\nchant pos = [3, 1, 4]"
+    },
+    {
+        "num": 3, "init_data":"chant data = [100, 20, 300, 40]"
+    }
+];
+const gimmick2MainData = [
+    {
+        "num": 1,
+        "prob": "frip data\ncreate final = 0\nloop num in data {\n\tjudge (oracle num) {\n\t\tset final = final + num\n\t}\n}"
+    },
+    {
+        "num": 2,
+        "prob": "frip data\ncreate num1 = data 1\ncreate num_last = data data\nset final = num1 * num_last"
+    },
+    {
+        "num": 3,
+        "prob": "frip data\ncreate final = \"\"\nloop num in data {\n\tset final = final join num\n}"
+    }
+];
+const gimmick2FinData = [
+    {
+        "num": 1,
+        "fin": "set final = final * 3\nreveal final"
+    },
+    {
+        "num": 2,
+        "fin": "set final = final / 2\nreveal final"
+    },
+    {
+        "num": 3,
+        "fin": "set final = final + 2\nreveal final"
+    }
+];
+
+// gimmick_3 のデータを直接埋め込む
+const gimmick3InitializationData = [
+    {
+        "num": 1,
+        "init_data": "chant data = [11, 6, 15, 13, 8]"
+    },
+    {
+        "num": 2,
+        "init_data": "chant data = [2, 4, 3, 6, 9]"
+    },
+    {
+        "num": 3,
+        "init_data": "chant data = [45, 10, 25, 2]"
+    }
+];
+const gimmick3MainData = [
+    {
+        "num": 1,
+        "prob": "create even_sum = 0\ncreate prime_sum = 0\nloop num in data {\n\tjudge (harmony num) {\n\t\tset even_sum = even_sum + num\n\t}\n\tjudge (oracle num) {\n\t\tset prime_sum = prime_sum + num\n\t}\n}\n\nset final = even_sum - prime_sum"
+    },
+    {
+        "num": 2,
+        "prob": "create final = 1\nloop num in data {\n\tjudge (oracle num) {\n\n\t} else {\n\t\tset final = final * num\n\t}\n}"
+    },
+    {
+        "num": 3,
+        "prob": "create even_count = 0\ncreate odd_count = 0\nloop num in data {\n\tjudge (harmony num) {\n\t\tset even_count = even_count + 1\n\t} else {\n\t\tset odd_count = odd_count + 1\n\t}\n}\n\nset final = even_count - odd_count"
+    }
+];
+const gimmick3FinData = [
+    {
+        "num": 1,
+        "fin": "set final = final - 34\nreveal final"
+    },
+    {
+        "num": 2,
+        "fin": "set final = final * 11\nreveal final"
+    },
+    {
+        "num": 3,
+        "fin": "set final = final + 11\nreveal final"
+    }
+];
+
+// gimmick_4 のデータを直接埋め込む
+const gimmick4InitializationData = [
+    {
+        "num": 1,
+        "init_data": "chant data = [11, 6, 15, 13, 8]"
+    },
+    {
+        "num": 2,
+        "init_data": "chant data = [2, 4, 3, 6, 9]"
+    },
+    {
+        "num": 3,
+        "init_data": "chant data = [45, 10, 25, 2]"
+    }
+];
+const gimmick4MainData = [
+    {
+        "num": 1,
+        "prob": "create even_sum = 0\ncreate prime_sum = 0\nloop num in data {\n\tjudge (harmony num) {\n\t\tset even_sum = even_sum + num\n\t}\n\tjudge (oracle num) {\n\t\tset prime_sum = prime_sum + num\n\t}\n}\n\nset final = even_sum - prime_sum"
+    },
+    {
+        "num": 2,
+        "prob": "create final = 1\nloop num in data {\n\tjudge (oracle num) {\n\n\t} else {\n\t\tset final = final * num\n\t}\n}"
+    },
+    {
+        "num": 3,
+        "prob": "create even_count = 0\ncreate odd_count = 0\nloop num in data {\n\tjudge (harmony num) {\n\t\tset even_count = even_count + 1\n\t} else {\n\t\tset odd_count = odd_count + 1\n\t}\n}\n\nset final = even_count - odd_count"
+    }
+];
+const gimmick4FinData = [
+    {
+        "num": 1,
+        "fin": "set final = final - 34\nreveal final"
+    },
+    {
+        "num": 2,
+        "fin": "set final = final * 11\nreveal final"
+    },
+    {
+        "num": 3,
+        "fin": "set final = final + 11\nreveal final"
+    }
+];
+
 function getGimmick1Code() {
     try {
         let initIndex, mainIndex, finIndex;
@@ -85,49 +214,159 @@ ${randomFin}`;
     }
 }
 
+function getGimmick2Code() {
+    try {
+        let initIndex, mainIndex, finIndex;
+        const storedCombination = sessionStorage.getItem('gimmick2_combination');
+
+        if (storedCombination) {
+            // 保存された組み合わせがあれば、それを使用する
+            const combo = JSON.parse(storedCombination);
+            initIndex = combo.init;
+            mainIndex = combo.main;
+            finIndex = combo.fin;
+        } else {
+            // 保存されていなければ、新しく生成して保存する
+            initIndex = Math.floor(Math.random() * gimmick2InitializationData.length);
+            mainIndex = Math.floor(Math.random() * gimmick2MainData.length);
+            finIndex = Math.floor(Math.random() * gimmick2FinData.length);
+            
+            sessionStorage.setItem('gimmick2_combination', JSON.stringify({
+                init: initIndex,
+                main: mainIndex,
+                fin: finIndex
+            }));
+        }
+
+        const randomInit = gimmick2InitializationData[initIndex].init_data;
+        const randomMain = gimmick2MainData[mainIndex].prob;
+        const randomFin = gimmick2FinData[finIndex].fin;
+
+        // どのデータが使われたかコンソールに記録
+        console.log(`Gimmick 2 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+
+        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
+${randomInit}
+
+<span class="comment">// 以下、解読された処理内容</span>
+${randomMain}
+
+<span class="comment">// 最終的な儀式</span>
+${randomFin}`;
+
+    } catch (e) {
+        console.error('Gimmick 2 コードの生成に失敗:', e);
+        return '<span class="error">コードの生成に失敗しました。</span>';
+    }
+}
+
+function getGimmick3Code() {
+    try {
+        let initIndex, mainIndex, finIndex;
+        const storedCombination = sessionStorage.getItem('gimmick3_combination');
+
+        if (storedCombination) {
+            const combo = JSON.parse(storedCombination);
+            initIndex = combo.init;
+            mainIndex = combo.main;
+            finIndex = combo.fin;
+        } else {
+            initIndex = Math.floor(Math.random() * gimmick3InitializationData.length);
+            mainIndex = Math.floor(Math.random() * gimmick3MainData.length);
+            finIndex = Math.floor(Math.random() * gimmick3FinData.length);
+
+            sessionStorage.setItem('gimmick3_combination', JSON.stringify({
+                init: initIndex,
+                main: mainIndex,
+                fin: finIndex
+            }));
+        }
+
+        const randomInit = gimmick3InitializationData[initIndex].init_data;
+        const randomMain = gimmick3MainData[mainIndex].prob;
+        const randomFin = gimmick3FinData[finIndex].fin;
+
+        console.log(`Gimmick 3 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+
+        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
+${randomInit}
+
+<span class="comment">// 以下、解読された処理内容</span>
+${randomMain}
+
+<span class="comment">// 最終的な儀式</span>
+${randomFin}`;
+
+    } catch (e) {
+        console.error('Gimmick 3 コードの生成に失敗:', e);
+        return '<span class="error">コードの生成に失敗しました。</span>';
+    }
+}
+
+function getGimmick4Code() {
+    try {
+        let initIndex, mainIndex, finIndex;
+        const storedCombination = sessionStorage.getItem('gimmick4_combination');
+
+        if (storedCombination) {
+            const combo = JSON.parse(storedCombination);
+            initIndex = combo.init;
+            mainIndex = combo.main;
+            finIndex = combo.fin;
+        } else {
+            initIndex = Math.floor(Math.random() * gimmick4InitializationData.length);
+            mainIndex = Math.floor(Math.random() * gimmick4MainData.length);
+            finIndex = Math.floor(Math.random() * gimmick4FinData.length);
+
+            sessionStorage.setItem('gimmick4_combination', JSON.stringify({
+                init: initIndex,
+                main: mainIndex,
+                fin: finIndex
+            }));
+        }
+
+        const randomInit = gimmick4InitializationData[initIndex].init_data;
+        const randomMain = gimmick4MainData[mainIndex].prob;
+        const randomFin = gimmick4FinData[finIndex].fin;
+
+        console.log(`Gimmick 4 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+
+        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
+${randomInit}
+
+<span class="comment">// 以下、解読された処理内容</span>
+${randomMain}
+
+<span class="comment">// 最終的な儀式</span>
+${randomFin}`;
+
+    } catch (e) {
+        console.error('Gimmick 4 コードの生成に失敗:', e);
+        return '<span class="error">コードの生成に失敗しました。</span>';
+    }
+}
 
 // 表示する石版のデータを配列で管理
 // HTMLで色付けするための<span>タグも一緒に文字列として含めておきます。
 const slateData = [
     {
         title: "いにしえの言葉が刻まれし石板",
-        getCode: getGimmick1Code
+        getCode: getGimmick1Code,
+        answer: "1234" // (1234に統一)
     },
     {
         title: "時を超えし叡智の石版",
-        code: `<span class="keyword">hensu_sengen</span> moji passwordHint = <span class="string">"OPEN_SESAME"</span>
-<span class="keyword">hensu_sengen</span> ataru length = <span class="number">11</span>
-
-<span class="keyword">moshi</span> (length == passwordHint.length) {
-    <span class="function">satoru</span>(passwordHint[<span class="number">4</span>]) <span class="comment">// 5番目の文字を出力</span>
-} <span class="keyword">soreigai</span> {
-    <span class="function">satoru</span>(<span class="string">"ヒントではない"</span>)
-}
-
-<span class="comment">// "開けゴマ"…この言葉の5番目の文字は何だ？</span>`,
+        getCode: getGimmick2Code,
         answer: "1234" // (1234に統一)
     },
     {
         title: "謎めきし符号の石版",
-        code: `<span class="keyword">hensu_sengen</span> ataru num1 = <span class="number">5</span>
-<span class="keyword">hensu_sengen</span> ataru num2 = <span class="number">3</span>
-<span class="keyword">hensu_sengen</span> ataru result = (num1 * num2) + <span class="number">2</span> <span class="comment">// (5 × 3) + 2</span>
-
-<span class="function">satoru</span>(result % <span class="number">10</span>) <span class="comment">// 10で割った余り</span>
-
-<span class="comment">// 計算結果の一の位が重要そうだ。</span>`,
+        getCode: getGimmick3Code,
         answer: "1234" // (1234に統一)
     },
     {
         title: "深遠なる思考の石版",
-        code: `<span class="keyword">hensu_sengen</span> hairetsu sequence = [<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>]
-<span class="keyword">hensu_sengen</span> ataru next_val
-
-next_val = sequence[<span class="number">4</span>] + sequence[<span class="number">5</span>] <span class="comment">// 5番目と6番目の要素の和</span>
-
-<span class="function">satoru</span>(next_val)
-
-<span class="comment">// この数列には特別な規則があるようだ。次に来る数字は…</span>`,
+        getCode: getGimmick4Code,
         answer: "1234" // (1234に統一)
     }
 ];
