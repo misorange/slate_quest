@@ -1,22 +1,97 @@
+// gimmick_1 のデータを直接埋め込む
+const gimmick1InitializationData = [
+    {
+        "num": 1, "init_data":"chant data = [13, 10, 7, 6, 17, 4]"
+    },
+    {
+        "num": 2, "init_data":"chant data = [50, 15, 22, 5]"
+    },
+    {
+        "num": 3, "init_data":"chant data = [45, 10, 25, 2]"
+    }
+];
+const gimmick1MainData = [
+    {
+        "num": 1,
+        "prob": "create final = 0\nloop num in data {\n\tjudge (harmony num){\n\t}else{\n\t\tset final = final + num\n\t\tjudge (final > 30) {\n\t\t\tbreak\n\t\t}\n\t}\n}"
+    },
+    {
+        "num": 2,
+        "prob": "create final = 0\ncreate prime_count = 0\nloop num in data {\n\tjudge (oracle num) {\n\t\t\tset final = final + num\n\t\t\tset prime_count = prime_count + 1\n\t\tjudge (prime_count > 2){\n\t\t\tbreak\n\t\t}\n\t}\n}"
+    },
+    {
+        "num": 3,
+        "prob": "create final = 0\ncreate index = 0\nloop num in data {\n\tset index = index + 1\n\tjudge (harmony index) {\n\t\tjudge (harmony num) {\n\t\t\tset final = num\n\t\t\tbreak\n\t\t}\n\t}\n}"
+    }
+];
+const gimmick1FinData = [
+    {
+        "num": 1,
+        "fin": "set final = final * 5\nreveal final"
+    },
+    {
+        "num": 2,
+        "fin": "set final = final / 2\nreveal final"
+    },
+    {
+        "num": 3,
+        "fin": "set final = final + 11\nreveal final"
+    }
+];
+
+function getGimmick1Code() {
+    try {
+        let initIndex, mainIndex, finIndex;
+        const storedCombination = sessionStorage.getItem('gimmick1_combination');
+
+        if (storedCombination) {
+            // 保存された組み合わせがあれば、それを使用する
+            const combo = JSON.parse(storedCombination);
+            initIndex = combo.init;
+            mainIndex = combo.main;
+            finIndex = combo.fin;
+        } else {
+            // 保存されていなければ、新しく生成して保存する
+            initIndex = Math.floor(Math.random() * gimmick1InitializationData.length);
+            mainIndex = Math.floor(Math.random() * gimmick1MainData.length);
+            finIndex = Math.floor(Math.random() * gimmick1FinData.length);
+            
+            sessionStorage.setItem('gimmick1_combination', JSON.stringify({
+                init: initIndex,
+                main: mainIndex,
+                fin: finIndex
+            }));
+        }
+
+        const randomInit = gimmick1InitializationData[initIndex].init_data;
+        const randomMain = gimmick1MainData[mainIndex].prob;
+        const randomFin = gimmick1FinData[finIndex].fin;
+
+        // どのデータが使われたかコンソールに記録
+        console.log(`Gimmick 1 - Init: ${initIndex}, Main: ${mainIndex}, Fin: ${finIndex}`);
+
+        return `<span class="comment">// 古代の言語で書かれた呪文の初期化</span>
+${randomInit}
+
+<span class="comment">// 以下、解読された処理内容</span>
+${randomMain}
+
+<span class="comment">// 最終的な儀式</span>
+${randomFin}`;
+
+    } catch (e) {
+        console.error('Gimmick 1 コードの生成に失敗:', e);
+        return '<span class="error">コードの生成に失敗しました。</span>';
+    }
+}
+
+
 // 表示する石版のデータを配列で管理
 // HTMLで色付けするための<span>タグも一緒に文字列として含めておきます。
 const slateData = [
     {
-        title: "古の言葉が刻まれし石版",
-        code: `<span class="keyword">hensu_sengen</span> ataru keyA = <span class="number">10</span>
-
-<span class="keyword">hensu_sengen</span> hairetsu treasures = [<span class="string">"宝石"</span>, <span class="string">"地図"</span>, <span class="string">"鍵"</span>]
-
-<span class="keyword">kurikaesu</span> (i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) {
-    <span class="keyword">moshi</span> (keyA == <span class="number">10</span>) {
-        <span class="function">satoru</span>(treasures[i])
-    } <span class="keyword">matawa_moshi</span> (keyA > <span class="number">20</span>) {
-        <span class="function">satoru</span>(<span class="string">"罠だ！"</span>)
-    }
-}
-
-<span class="comment">// 最後の宝のインデックスがパスワードの一部らしい…</span>`,
-        answer: "1234" // 各石版の正解パスワード (1234に統一)
+        title: "いにしえの言葉が刻まれし石板",
+        getCode: getGimmick1Code
     },
     {
         title: "時を超えし叡智の石版",
@@ -92,7 +167,13 @@ let currentSlateIndex = 0;
 function displaySlate(index) {
     const slate = slateData[index];
     slateTitleElement.textContent = slate.title;
-    codeDisplayElement.innerHTML = slate.code;
+    
+    // ★修正: getCodeが関数であれば呼び出す
+    if (typeof slate.getCode === 'function') {
+        codeDisplayElement.innerHTML = slate.getCode();
+    } else {
+        codeDisplayElement.innerHTML = slate.code;
+    }
 
     // ★追加: IDバッジのテキストを更新
     const romanNumerals = ["I", "II", "III", "IV"]; // 石板は4つのため
@@ -108,7 +189,7 @@ function displaySlate(index) {
 }
 
 // 新: コード領域をアニメーションで差し替えるヘルパー
-function animateTransitionTo(newIndex) {
+async function animateTransitionTo(newIndex) {
     const block = document.querySelector('.code-block');
     if (!block) {
         // 万一要素が無ければ即時差し替え
@@ -221,6 +302,7 @@ const gameState = {
          try { 
              localStorage.removeItem('slate_quest_answers_v1'); 
              localStorage.removeItem('startTime'); // ★追加
+             sessionStorage.removeItem('gimmick1_combination');
          } catch(e) {}
     }
 };
@@ -268,7 +350,7 @@ function updateClearedDisplay(isCleared) {
             form.classList.add('form-cleared');
         }
     } else {
-        // --- 未クリアの表示 (主に「次の石板へ」で切り替わった時用) ---
+        // --- 未クリアの表示 (主に「次の石版へ」で切り替わった時用) ---
         if (clearedMark) {
             clearedMark.remove();
         }
