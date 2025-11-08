@@ -43,6 +43,54 @@
             margin-top: 15px;
             background-color: #555;
         }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal-content h2 {
+            margin: 0 0 20px 0;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group input {
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
     </style>
 </head>
 
@@ -56,6 +104,7 @@
                 
                 <a href="select.html" class="btn normal-btn">normal</a>
                 <a href="#" id="qr-start-btn" class="btn easy-btn">card scan</a>
+                <a href="#" id="manual-id-btn" class="btn normal-btn">type id</a>
             </div>
 
             <div id="qr-reader-section" class="hidden">
@@ -65,6 +114,19 @@
             </div>
         </div>
     </main>
+    
+    <div id="id-input-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>ID入力</h2>
+            <div class="input-group">
+                <input type="text" id="manual-id-input" placeholder="IDを入力（半角英数字）">
+                <div class="button-group">
+                    <button id="modal-submit" class="btn normal-btn">決定</button>
+                    <button id="modal-cancel" class="btn">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ★修正: ゲーム開始時に「両方」のモードのデータをクリア
@@ -138,8 +200,65 @@
         // ★追加: ロゴ要素を取得
         const gameLogo = document.querySelector('.game-logo');
 
+        const manualBtn = document.getElementById('manual-id-btn');
+        const modal = document.getElementById('id-input-modal');
+        const modalInput = document.getElementById('manual-id-input');
+        const modalSubmit = document.getElementById('modal-submit');
+        const modalCancel = document.getElementById('modal-cancel');
+
         const codeReader = new BrowserMultiFormatReader();
         let stream = null; 
+
+        if (manualBtn) {
+            manualBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.remove('hidden');
+                modalInput.focus();
+            });
+        }
+
+        // モーダルの送信処理
+        modalSubmit.addEventListener('click', () => {
+            const input = modalInput.value;
+            if (input && input.trim() !== '') {
+                const uid = input.trim();
+                try {
+                    localStorage.setItem('uid', uid);
+                    localStorage.setItem('correctAnswers', '0');
+                    console.log('Manual ID saved:', uid);
+                    
+                    const resultEl = document.getElementById('result');
+                    if (resultEl) resultEl.textContent = `IDセット: ${uid}`;
+                    
+                    modal.classList.add('hidden');
+                    modalInput.value = '';
+                } catch (err) {
+                    console.warn('localStorage への保存に失敗:', err);
+                    alert('IDの保存に失敗しました。ブラウザの設定を確認してください。');
+                }
+            }
+        });
+
+        // モーダルのキャンセル処理
+        modalCancel.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modalInput.value = '';
+        });
+
+        // モーダル外クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                modalInput.value = '';
+            }
+        });
+
+        // エンターキーで送信
+        modalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                modalSubmit.click();
+            }
+        });
 
         // QRリーダーを開始する関数
         async function startQRCodeReader() {

@@ -231,11 +231,12 @@ pre{white-space:pre-wrap; word-break:break-word; font-family:monospace; color:va
 #start-screen .difficulty-selector .btn:nth-child(1){ animation: btnIn 600ms cubic-bezier(.2,.9,.2,1) both; animation-delay: 1.25s; }
 #start-screen .difficulty-selector .btn:nth-child(2){ animation: btnIn 600ms cubic-bezier(.2,.9,.2,1) both; animation-delay: 1.45s; }
 #start-screen .difficulty-selector .btn:nth-child(3){ animation: btnIn 600ms cubic-bezier(.2,.9,.2,1) both; animation-delay: 1.65s; }
-
+#start-screen .difficulty-selector .btn:nth-child(4){ animation: btnIn 600ms cubic-bezier(.2,.9,.2,1) both; animation-delay: 1.85s; }
 @media (max-width:480px){
     #start-screen .difficulty-selector .btn:nth-child(1){ animation-delay: 1.3s; }
     #start-screen .difficulty-selector .btn:nth-child(2){ animation-delay: 1.5s; }
     #start-screen .difficulty-selector .btn:nth-child(3){ animation-delay: 1.7s; }
+    #start-screen .difficulty-selector .btn:nth-child(4){ animation-delay: 1.9s; }
 }
 
 /* --- 石板一覧のフェードイン（stagger） --- */
