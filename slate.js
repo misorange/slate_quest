@@ -20,7 +20,7 @@ const gimmick1MainData = [
     },
     {
         "num": 2,
-        "prob": "create final = 0\ncreate prime_count = 0\nloop num in data {\n\tjudge (oracle num) {\n\t\t\tset final = final + num\n\t\t\tset prime_count = prime_count + 1\n\t\tjudge (prime_count > 2){\n\t\t\tbreak\n\t\t}\n\t}\n}"
+        "prob": "create final = 0\ncreate prime_count = 0\nloop num in data {\n\tjudge (oracle num) {\n\t\tset final = final + num\n\t\tset prime_count = prime_count + 1\n\t\tjudge (prime_count > 2){\n\t\t\tbreak\n\t\t}\n\t}\n}"
     },
     {
         "num": 3,
