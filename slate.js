@@ -322,7 +322,7 @@ const gimmick4MainData = [
     },
     {
         "num": 3,
-        "prob": "create char1 = data 1\nset final = char1 join char1\nset final = char2 join char4"
+        "prob": "create char1 = data 1\nset char2 = char1 join char1\nset final = char2 join char1"
     }
 ];
 const gimmick4FinData = [
