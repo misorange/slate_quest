@@ -553,7 +553,7 @@ function getGimmick3Code() {
         const randomMain = gimmick3MainData[mainIndex].prob;
         const randomFin = gimmick3FinData[finIndex].fin;
 
-         const answerId = `${initIndex}${mainIndex}${finIndex}`;
+        const answerId = `${initIndex}${mainIndex}${finIndex}`;
         const answerData = gimmick3AnswerData.find(item => item.id === answerId);
         const answer = answerData ? answerData.ans : "ERR0";
 
@@ -786,7 +786,13 @@ function animateTransitionTo(newIndex) {
 // 「次の石版へ」ボタン (共通)
 nextButton.addEventListener('click', () => {
     // ★ 修正: 入力保存は code_view.js 側で行う
-    const targetIndex = (currentSlateIndex + 1) % activeSlateData.length;
+    
+    // ★修正: 準備中の石板(index 1)をスキップするロジック (Normalモードのみ)
+    let targetIndex = (currentSlateIndex + 1) % activeSlateData.length;
+    if (!IS_EASY_MODE && targetIndex === 1) { // 1 = 準備中の第二の石板
+        targetIndex = (targetIndex + 1) % activeSlateData.length; // 2 (第三の石板) に飛ぶ
+    }
+    
     animateTransitionTo(targetIndex);
 });
 
@@ -832,14 +838,14 @@ const gameState = {
         this.remainingAttempts = INITIAL_ATTEMPTS; 
         this.clearedSlates = [];
         this.save();
-         try { 
-             localStorage.removeItem(window.GAME_KEYS.INPUTS); 
-             localStorage.removeItem(window.GAME_KEYS.START_TIME);
-             sessionStorage.removeItem('gimmick1_combination');
-             sessionStorage.removeItem('gimmick2_combination');
-             sessionStorage.removeItem('gimmick3_combination');
-             sessionStorage.removeItem('gimmick4_combination');
-         } catch(e) {}
+        try { 
+            localStorage.removeItem(window.GAME_KEYS.INPUTS); 
+            localStorage.removeItem(window.GAME_KEYS.START_TIME);
+            sessionStorage.removeItem('gimmick1_combination');
+            sessionStorage.removeItem('gimmick2_combination');
+            sessionStorage.removeItem('gimmick3_combination');
+            sessionStorage.removeItem('gimmick4_combination');
+        } catch(e) {}
     }
 };
 
@@ -912,7 +918,19 @@ function checkPassword(enteredPassword) {
             window.clearInputsForIndex(currentSlateIndex);
         }
 
-        const isGameClear = gameState.clearedSlates.length === activeSlateData.length;
+        // ★★★ ここから修正 ★★★
+        // ゲームクリア条件の判定
+        let isGameClear = false;
+        if (IS_EASY_MODE) {
+            // Easyモード: 全ての石板 (2枚) をクリア
+            isGameClear = gameState.clearedSlates.length === activeSlateData.length;
+        } else {
+            // Normalモード: 1, 3, 4 (index 0, 2, 3) をクリア
+            const requiredSlates = [0, 2, 3];
+            const clearedSet = new Set(gameState.clearedSlates);
+            isGameClear = requiredSlates.every(idx => clearedSet.has(idx));
+        }
+        // ★★★ ここまで修正 ★★★
 
         if (isGameClear) {
             try {

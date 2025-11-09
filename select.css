@@ -151,3 +151,30 @@ body {
 
 /* ★ アニメーションは main.css 側に移動（統合）されました */
 /* .slate .stone アニメーションは main.css を参照 */
+
+/* ★★★ ここから追加 ★★★ */
+/* 準備中の石板 (HTMLに .preparing が付与されたもの) */
+.stone.preparing {
+    cursor: not-allowed;
+    background: linear-gradient(165deg, 
+        #c0c0c0 0%, 
+        #b0b0b0 40%,
+        #a0a0a0 100%
+    );
+    opacity: 0.8;
+    box-shadow: 
+        0 8px 16px rgba(0,0,0,0.1),
+        inset 0 2px 4px rgba(255,255,255,0.1),
+        inset 0 -4px 8px rgba(0,0,0,0.1);
+}
+.stone.preparing:hover {
+    transform: none; /* ホバー無効 */
+    box-shadow: 
+        0 8px 16px rgba(0,0,0,0.1),
+        inset 0 2px 4px rgba(255,255,255,0.1),
+        inset 0 -4px 8px rgba(0,0,0,0.1);
+}
+.stone.preparing .stone-title {
+    opacity: 0.6; /* JSで .stone-sub の色を変えるので、これは不要かも */
+}
+/* ★★★ ここまで追加 ★★★ */

@@ -31,8 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = stones[i];
         el.dataset.index = String(i);
         
+        // ★修正: 準備中かどうかのフラグを追加
+        const isCleared = clearedSlates.includes(i);
+        const isPreparing = el.classList.contains('preparing'); // HTML側で付与されたクラスを検出
+
         // クリア済みかチェック
-        if (clearedSlates.includes(i)) {
+        if (isCleared) {
             el.classList.add('cleared');
             
             // クリア済みマークを追加
@@ -43,8 +47,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearedMark.textContent = 'CLEARED';
                 plate.appendChild(clearedMark);
             }
+
+        // ★追加: 準備中かチェック (cleared ではない場合)
+        } else if (isPreparing) {
+            
+            // 準備中の表示（サブタイトルを書き換える）
+            const plate = el.querySelector('.stone-plate');
+            if (plate) {
+                const subTitle = plate.querySelector('.stone-sub');
+                if (subTitle) {
+                    subTitle.textContent = '（準備中）';
+                    subTitle.style.color = '#d10000'; // 赤色で目立たせる
+                    subTitle.style.fontWeight = 'bold';
+                    subTitle.style.fontSize = '1.1rem';
+                }
+            }
+
         } else {
-            // クリアしてない石版にだけクリックイベントを設定
+            // ★修正: クリアも準備中でもない石版にだけクリックイベントを設定
             el.addEventListener('click', (event) => {
                 const idx = event.currentTarget.dataset.index || i;
                 
