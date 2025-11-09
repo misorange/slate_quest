@@ -300,43 +300,43 @@ const gimmick3AnswerData = [
 const gimmick4InitializationData = [
     {
         "num": 1,
-        "init_data": "chant data = [11, 6, 15, 13, 8]"
+        "init_data": "chant data = [\"A\", \"L\", \"E\", \"T\"]\nchant pos = [3, 1, 4]"
     },
     {
         "num": 2,
-        "init_data": "chant data = [2, 4, 3, 6, 9]"
+        "init_data": "chant data = [\"C\", \"O\", \"D\", \"E\", \"X\"] \nchant pos = [2, 4, 1]"
     },
     {
         "num": 3,
-        "init_data": "chant data = [45, 10, 25, 2]"
+        "init_data": "chant data = [\"S\", \"H\", \"I\", \"F\", \"T\"]/nchant pos = [5, 3, 1]"
     }
 ];
 const gimmick4MainData = [
     {
         "num": 1,
-        "prob": "create even_sum = 0\ncreate prime_sum = 0\nloop num in data {\n\tjudge (harmony num) {\n\t\tset even_sum = even_sum + num\n\t}\n\tjudge (oracle num) {\n\t\tset prime_sum = prime_sum + num\n\t}\n}\n\nset final = even_sum - prime_sum"
+        "prob": "frip data\ncreate pos3 = pos 3\ncreate final = data pos3"
     },
     {
         "num": 2,
-        "prob": "create final = 1\nloop num in data {\n\tjudge (oracle num) {\n\n\t} else {\n\t\tset final = final * num\n\t}\n}"
+        "prob": "create char2 = data 2\ncreate char4 = data 4\nset final = char2 join char4"
     },
     {
         "num": 3,
-        "prob": "create even_count = 0\ncreate odd_count = 0\nloop num in data {\n\tjudge (harmony num) {\n\t\tset even_count = even_count + 1\n\t} else {\n\t\tset odd_count = odd_count + 1\n\t}\n}\n\nset final = even_count - odd_count"
+        "prob": "create char1 = data 1\nset final = char1 join char1\nset final = char2 join char4"
     }
 ];
 const gimmick4FinData = [
     {
         "num": 1,
-        "fin": "set final = final - 34\nreveal final"
+        "fin": "set final = final * 5\nreveal final"
     },
     {
         "num": 2,
-        "fin": "set final = final * 11\nreveal final"
+        "fin": "set final = final join \"key\"\nreveal final"
     },
     {
         "num": 3,
-        "fin": "set final = final + 11\nreveal final"
+        "fin": "frip final\nreveal final"
     }
 ];
 
