@@ -308,7 +308,7 @@ const gimmick4InitializationData = [
     },
     {
         "num": 3,
-        "init_data": "chant data = [\"S\", \"H\", \"I\", \"F\", \"T\"]/nchant pos = [5, 3, 1]"
+        "init_data": "chant data = [\"S\", \"H\", \"I\", \"F\", \"T\"]\nchant pos = [5, 3, 1]"
     }
 ];
 const gimmick4MainData = [
